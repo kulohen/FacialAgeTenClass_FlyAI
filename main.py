@@ -36,6 +36,9 @@ dataset.get_all_validation_data(): 1956
 x_train, y_train , x_val, y_val =dataset.get_all_processor_data()
 print('dataset.get_train_length() :',dataset.get_train_length())
 print('dataset.get_all_validation_data():',dataset.get_validation_length())
+# 针对one-hot实现的分类统计
+print('y_train.sum():',y_train.sum(axis=0))
+print('y_val.sum():',y_val.sum(axis=0))
 '''
 实现自己的网络机构
 '''
@@ -81,7 +84,7 @@ data_iter_validation = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_
 # 验证集可以也写成imagedatagenerator
 
 print('x_train_and_x_val.shape :', x_train_and_x_val.shape)
-
+print('x_train_and_x_val.sum():',x_train_and_x_val.sum(axis=0))
 
 history = sqeue.fit_generator(
     generator= data_iter_train,
