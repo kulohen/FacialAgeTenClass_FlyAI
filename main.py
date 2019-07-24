@@ -18,7 +18,7 @@ from model import KERAS_MODEL_NAME
 项目的超参
 '''
 parser = argparse.ArgumentParser()
-parser.add_argument("-e", "--EPOCHS", default=100, type=int, help="train epochs")
+parser.add_argument("-e", "--EPOCHS", default=30, type=int, help="train epochs")
 parser.add_argument("-b", "--BATCH", default=32, type=int, help="batch size")
 args = parser.parse_args()
 
@@ -52,7 +52,7 @@ sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 # sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
-              optimizer='rmsprop',
+              optimizer='sgd',
               metrics=['accuracy'])
 
 # 模型保存的路径
@@ -61,8 +61,8 @@ MODEL_PATH_FILE = os.path.join(MODEL_PATH, KERAS_MODEL_NAME)
 
 # callbacks回调函数的定义
 savebestonly = ModelCheckpoint( filepath =MODEL_PATH_FILE, monitor='val_loss', mode='auto', save_best_only=True, verbose=1)
-early_stopping = EarlyStopping(monitor='val_loss', patience=20 ,verbose=1)
-xuexilv = ReduceLROnPlateau(monitor='loss',patience=20, verbose=1)
+early_stopping = EarlyStopping(monitor='loss', patience=20 ,verbose=1,min_delta=0.003)
+xuexilv = ReduceLROnPlateau(monitor='loss',patience=5, verbose=1)
 
 
 x_train_and_x_val = np.concatenate((x_train, x_val),axis=0)
@@ -79,23 +79,42 @@ datagen= ImageDataGenerator(
     validation_split=0.25
 )
 # datagen.fit(x_train_and_x_val)
-data_iter_train = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_size=args.BATCH , save_to_dir = None, subset='training')
+data_iter_train = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_size=args.BATCH , save_to_dir = None)
 data_iter_validation = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_size=args.BATCH , save_to_dir = None, subset='validation')
 # 验证集可以也写成imagedatagenerator
 
 print('x_train_and_x_val.shape :', x_train_and_x_val.shape)
-print('x_train_and_x_val.sum():',x_train_and_x_val.sum(axis=0))
-
+print('y_train_and_y_val.sum():',y_train_and_y_val.sum(axis=0))
+'''
 history = sqeue.fit_generator(
     generator= data_iter_train,
-    steps_per_epoch=250,
-    validation_data=data_iter_validation,
+    steps_per_epoch=4,
+    validation_data=(x_val,y_val),
     validation_steps=1,
     # callbacks = [early_stopping,xuexilv],
-    callbacks = [ savebestonly, xuexilv],
+    class_weight= 'auto',
+    callbacks = [ savebestonly, xuexilv,early_stopping],
     epochs =args.EPOCHS,
     verbose=2,
-    workers=24
+    workers=6
     # use_multiprocessing=True
 )
+'''
+
+
+history = sqeue.fit(
+    x=x_train_and_x_val,
+    y=y_train_and_y_val,
+    batch_size=args.BATCH,
+    epochs=args.EPOCHS,
+    verbose=2,
+    callbacks= [ savebestonly, xuexilv,early_stopping],
+    # validation_split=0.,
+    validation_data=(x_val,y_val),
+    shuffle=True,
+    class_weight='auto'
+)
+
+
+# print(history.history)
 

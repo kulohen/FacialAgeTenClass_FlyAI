@@ -41,3 +41,4 @@ print('y_val.sum():',y_val.sum(axis=0))
 # print('y_train.count(1):',y_train[0:100][0].count(1))
 
 # yaml = Yaml(path=os.path.join(MODEL_PATH, "app.yaml")).processor()
+model.predict_all(dataset.evaluate_data_no_processor())
