@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b94c5bc0-09c6-4e93-99ff-0a82305a544d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/FacialAgeTenClass_FlyAI.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FacialAgeTenClass_FlyAI.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Google_App_Engine_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Google_App_Engine_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_new_idea.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_new_idea.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,8 +17,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="491">
-              <caret line="111" column="26" selection-start-line="111" selection-start-column="26" selection-end-line="111" selection-end-column="26" />
+            <state relative-caret-position="548">
+              <caret line="127" column="16" selection-start-line="127" selection-start-column="4" selection-end-line="127" selection-end-column="16" />
               <folding>
                 <element signature="e#23#38#0" expanded="true" />
               </folding>
@@ -41,12 +38,12 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="126">
-                <caret line="7" column="23" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
+              <first_editor relative-caret-position="180">
+                <caret line="10" column="38" selection-start-line="10" selection-start-column="38" selection-end-line="10" selection-end-column="38" />
               </first_editor>
               <second_editor />
             </state>
@@ -77,7 +74,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test_new_idea.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="654">
@@ -138,6 +135,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="9e1f6b8c-ffa8-4efc-ad6e-148b42468cdb" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -146,9 +146,9 @@
         <option value="$PROJECT_DIR$/requirments.txt" />
         <option value="$PROJECT_DIR$/processor.py" />
         <option value="$PROJECT_DIR$/app.yaml" />
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/test_new_idea.py" />
+        <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -190,13 +190,6 @@
               <item name="data" type="462c0819:PsiDirectoryNode" />
               <item name="output" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="FacialAgeTenClass_FlyAI" type="b2602c69:ProjectViewProjectNode" />
-              <item name="FacialAgeTenClass_FlyAI" type="462c0819:PsiDirectoryNode" />
-              <item name="data" type="462c0819:PsiDirectoryNode" />
-              <item name="output" type="462c0819:PsiDirectoryNode" />
-              <item name="model" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -216,7 +209,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="settings.github" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -235,7 +228,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.test_new_idea">
+  <component name="RunManager" selected="Python.main">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="FacialAgeTenClass_FlyAI" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -342,9 +335,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.test_new_idea" />
         <item itemvalue="Python.predict" />
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.processor" />
       </list>
     </recent_temporary>
@@ -362,7 +355,7 @@
       <workItem from="1563555174656" duration="6568000" />
       <workItem from="1563577891150" duration="8578000" />
       <workItem from="1563722626526" duration="4964000" />
-      <workItem from="1563982805121" duration="1833000" />
+      <workItem from="1563982805121" duration="5086000" />
     </task>
     <task id="LOCAL-00001" summary="flyai 脸部识别，从pytorch改成keras">
       <created>1563560902810</created>
@@ -371,27 +364,35 @@
       <option name="project" value="LOCAL" />
       <updated>1563560902810</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="1111">
+      <created>1563984885958</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1563984885958</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="21943000" />
+    <option name="totallyTimeSpent" value="25196000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="83" y="32" width="2477" height="1408" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4958084" visible="true" weight="0.22503108" />
-      <window_info id="Structure" order="1" sideWeight="0.50419164" side_tool="true" visible="true" weight="0.22503108" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4958184" visible="true" weight="0.22503108" />
+      <window_info id="Structure" order="1" sideWeight="0.5041816" side_tool="true" visible="true" weight="0.22503108" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="1" />
       <window_info anchor="bottom" id="Version Control" order="2" />
       <window_info anchor="bottom" id="Python Console" order="3" />
-      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50020653" side_tool="true" weight="0.3293461" />
+      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.5006216" side_tool="true" weight="0.325" />
       <window_info anchor="bottom" id="Message" order="5" />
-      <window_info anchor="bottom" id="Find" order="6" weight="0.3293461" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49979347" weight="0.32741934" />
-      <window_info active="true" anchor="bottom" id="Run" order="8" visible="true" weight="0.3266129" />
+      <window_info anchor="bottom" id="Find" order="6" weight="0.32903227" />
+      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49979347" visible="true" weight="0.325" />
+      <window_info anchor="bottom" id="Run" order="8" sideWeight="0.49937835" weight="0.325" />
       <window_info anchor="bottom" id="Debug" order="9" weight="0.39967898" />
       <window_info anchor="bottom" id="Cvs" order="10" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="11" weight="0.4" />
@@ -408,12 +409,13 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="flyai 脸部识别，从pytorch改成keras" />
-    <option name="LAST_COMMIT_MESSAGE" value="flyai 脸部识别，从pytorch改成keras" />
+    <MESSAGE value="1111" />
+    <option name="LAST_COMMIT_MESSAGE" value="1111" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$test_new_idea.coverage" NAME="test_new_idea Coverage Results" MODIFIED="1563984619325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$predict.coverage" NAME="predict Coverage Results" MODIFIED="1563984226230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$main.coverage" NAME="main Coverage Results" MODIFIED="1563983295414" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$main.coverage" NAME="main Coverage Results" MODIFIED="1564069726476" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$processor.coverage" NAME="processor Coverage Results" MODIFIED="1563556935779" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="editorHistoryManager">
@@ -538,30 +540,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="126">
-            <caret line="7" column="23" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app.yaml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="378">
           <caret line="21" column="20" selection-start-line="21" selection-end-line="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="491">
-          <caret line="111" column="26" selection-start-line="111" selection-start-column="26" selection-end-line="111" selection-end-column="26" />
-          <folding>
-            <element signature="e#23#38#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -612,6 +594,26 @@
           <folding>
             <element signature="e#23#38#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="548">
+          <caret line="127" column="16" selection-start-line="127" selection-start-column="4" selection-end-line="127" selection-end-column="16" />
+          <folding>
+            <element signature="e#23#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="180">
+            <caret line="10" column="38" selection-start-line="10" selection-start-column="38" selection-end-line="10" selection-end-column="38" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>

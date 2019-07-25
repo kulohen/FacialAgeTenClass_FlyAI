@@ -52,7 +52,7 @@ sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 # sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
-              optimizer='sgd',
+              optimizer='adam',
               metrics=['accuracy'])
 
 # 模型保存的路径
@@ -100,6 +100,19 @@ history = sqeue.fit_generator(
     # use_multiprocessing=True
 )
 '''
+# 设置不同比例权重
+cw = {
+    0:33,
+    1:80,
+    2:64,
+    3:93,
+    4:144,
+    5:104,
+    6:150,
+    7:263,
+    8:309,
+    9:1117
+}
 
 
 history = sqeue.fit(
@@ -112,7 +125,7 @@ history = sqeue.fit(
     # validation_split=0.,
     validation_data=(x_val,y_val),
     shuffle=True,
-    class_weight='auto'
+    class_weight=cw
 )
 
 
