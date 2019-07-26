@@ -50,8 +50,12 @@ class Processor(Base):
 
     def input_y(self, label):
         one_hot_label = numpy.zeros([10])  ##生成全0矩阵
-        one_hot_label[label] = 1  ##相应标签位置置
-        return one_hot_label
+        if label > -1 and label < 10 :
+            one_hot_label[label] = 1  ##相应标签位置置
+            return one_hot_label
+        else:
+            print('input_y error: label not between 0-9')
+            return None
 
     '''
     输出的结果，会被dataset.to_categorys(data)调用

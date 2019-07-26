@@ -15,7 +15,8 @@ import sys
 import os
 from model import KERAS_MODEL_NAME
 '''
-项目的超参
+2019-07-26
+获取数据值，是否train set有问题？？读取label
 '''
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--EPOCHS", default=30, type=int, help="train epochs")
