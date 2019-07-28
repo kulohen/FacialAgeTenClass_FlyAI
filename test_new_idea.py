@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*
 import argparse
+
+import numpy as np
 from flyai.dataset import Dataset
 from model import Model
-import numpy as np
-from flyai.utils.yaml_helper import Yaml
-import os
-from path import MODEL_PATH
-from flyai.utils import read_data
-from flyai.source.source import Source
-from flyai.source.base import Base, DATA_PATH
-import sys
-from flyai.source.csv_source import Csv
+import WangyiUtilOnFlyai as wangyi
 
 '''
 项目的超参
@@ -66,41 +60,11 @@ print('random_slice', random_slice)
 # print(x_train[random_slice])
 # print(y_train[random_slice])
 
-
-# TODO 构建自己的验证集
-'''
-撰写 ：  提取y_val 的每类10个，组成100个array的y_val_normalize
-用csv创建验证集
-
-
-
-
-for data_per in range(y_val.shape[1]):
-    if np.argmax(y_val[data_per])
-    print(data_per)
-'''
-
-
-def readCsv_onFlyai(readCsvOnLocal=True):
-    try:
-        f = open(os.path.join(sys.path[0], 'train.json'))
-        line = f.readline().strip()
-    except IOError:
-        line = ""
-
-    if readCsvOnLocal:
-        source_csv = Source().create_instance("flyai.source.csv_source", 'Csv',
-                                              {'train_url': os.path.join(DATA_PATH, "dev.csv"),
-                                               'test_url': os.path.join(DATA_PATH, "dev.csv")}, line)
-    else:
-        source_csv = Source().create_instance("flyai.source.csv_source", 'Csv',
-                                              {'train_url': os.path.join(DATA_PATH, "train.csv"),
-                                               'test_url': os.path.join(DATA_PATH, "test.csv")}, line)
-    # 实际上返回的是 flyai.source.csv_source.py的 Csv类, source_csv.data 是train_csv文件,source_csv.val 是test_csv文件
-    return source_csv
-
-
-get_csv = readCsv_onFlyai(True)
-print(get_csv.data)
+get_csv = wangyi.readCsv_onFlyai(True)
+# print(get_csv.data)
 x_train, y_train, x_test, y_test = get_csv.get_all_data()
 print(y_train)
+
+dataset2 = Dataset(source=wangyi.readCustomCsv("test_custom.csv", "test_custom.csv"))
+print('dataset2.get_train_length()', dataset2.get_train_length())
+print('dataset2.get_validation_length()', dataset2.get_validation_length())
