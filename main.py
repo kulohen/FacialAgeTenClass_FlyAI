@@ -14,6 +14,7 @@ import tensorflow as tf
 import sys
 import os
 from model import KERAS_MODEL_NAME
+import WangyiUtilOnFlyai as wangyi
 '''
 2019-07-26
 获取数据值，是否train set有问题？？读取label
@@ -28,7 +29,8 @@ flyai库中的提供的数据处理方法
 传入整个数据训练多少轮，每批次批大小
 '''
 dataset = Dataset(epochs=args.EPOCHS, batch=args.BATCH)
-model = Model(dataset)
+dataset2 = wangyi.DatasetExtendToSize(False,1773 ,10)
+model = Model(dataset2)
 '''
 dataset.get_train_length() : 5866
 dataset.get_all_validation_data(): 1956

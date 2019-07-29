@@ -68,7 +68,7 @@ def ExtendDataFrameToSize(dataframe,size):
         dataframe = pd.concat([dataframe,dataframe.copy(deep=False)])
         return ExtendDataFrameToSize(dataframe, size)
 
-def ExtendCsvToSize(source_csv , label='label', size=-1):
+def ExtendCsvToSize(source_csv , label='label', size=-1 ,classify_count = -1):
     '''
 
     :param source_csv: dataframe格式，数据源
@@ -77,50 +77,53 @@ def ExtendCsvToSize(source_csv , label='label', size=-1):
     :return: 扩容后的CSV，dataframe格式
     '''
     df5 = pd.DataFrame()
-    #TODO range（10）还没改
-    for i in range(10):
+    for i in range(classify_count):
         if source_csv[source_csv[label] == i].empty :
             break
         tmp = ExtendDataFrameToSize( source_csv[source_csv[label] == i], size)
         df5 = pd.concat([df5, tmp])
-    # print(df5)
-    # df5.to_csv(os.path.join(DATA_PATH, 'wangyi-1.csv'), index=False)
     return df5
 
-# TODO 构建一个函数扩容csv
+
+def DatasetExtendToSize(readCsvOnLocal=True , size=36 ,classify_count=10):
+    '''
+
+    :param readCsvOnLocal: 设置True运行在本地使用，设置FALSE 运行在flyai服务器上使用
+    :param size: 每类的数据集扩容到size大小
+    :param classify_count: 分类的数量
+    :return: flyai的dataset类
+    '''
+    # step 0 : read csv
+    flyai_source = readCsv_onFlyai(readCsvOnLocal)
+    # step 1 : csv to dataframe
+    dataframe_train = pd.DataFrame(data=flyai_source.data)
+    dataframe_test = pd.DataFrame(data=flyai_source.val)
+    # step 2 : extend csv(dataframe)
+    dataframe_train = ExtendCsvToSize(dataframe_train, size=size, classify_count=classify_count)
+    dataframe_test = ExtendCsvToSize(dataframe_test, size=size, classify_count=classify_count)
+    # step 3 : save csv
+    dataframe_train.to_csv(os.path.join(DATA_PATH, 'wangyi-train.csv'), index=False)
+    dataframe_test.to_csv(os.path.join(DATA_PATH, 'wangyi-test.csv'), index=False)
+    # step 4 : load to flyai.dataset
+    dataset_extend_newone = Dataset(source=readCustomCsv("wangyi-train.csv", "wangyi-test.csv"))
+    return dataset_extend_newone
 
 if __name__=='__main__':
-    get_csv = readCsv_onFlyai(True)
-    # print(get_csv.data)
-    x_train, y_train, x_test, y_test = get_csv.get_all_data()
-    print(y_train)
 
-    dataset2 = Dataset(source=readCustomCsv("test_custom.csv", "test_custom.csv"))
+
+    dataset2 =DatasetExtendToSize(True , 36,10)
     print('dataset2.get_train_length()', dataset2.get_train_length())
     print('dataset2.get_validation_length()', dataset2.get_validation_length())
     xx_train , yy_train= dataset2.next_train_batch()
-    # print('yy_train',yy_train)
-    # save csv
+    print('yy_train.shape',yy_train.shape)
     df = pd.DataFrame(data=readCustomCsv("test_custom.csv", "test_custom.csv").data)
-    # df.to_csv( os.path.join(DATA_PATH, 'wangyi-1.csv'), index=False)
     print(df[df['label']==3])
-    # print(df.isin([4, 6]))
-    df2=df.copy(deep=False)
-    df3 = pd.concat([df,df2])
-    print('df3.size',df3.shape)
-    print(df3.shape[0])
 
-    df4 =ExtendDataFrameToSize(df,355)
-    print('df4.shape',df4.shape)
-    # df4.to_csv(os.path.join(DATA_PATH, 'wangyi-1.csv'), index=False)
-    print(df[df['label'] == 7])
-
-    df6 =ExtendCsvToSize(df , label='label' ,size=30)
-    print('df6.shape',df6.shape)
 
     # 构建成函数，类似一键扩容，生成返回对应dataset
     df7 = pd.DataFrame(data=readCustomCsv("dev.csv", "dev.csv").data)
-    df7 =ExtendCsvToSize(df7 ,size=16)
+    df7 =ExtendCsvToSize(df7 ,size=16,classify_count=10)
     print('df7.shape', df7.shape)
-    df7.to_csv(os.path.join(DATA_PATH, 'wangyi-2.csv'), index=False)
-    #TODO 这里读取wangyi-2.csv ，并用dataset2 = Dataset(source=readCustomCsv("test_custom.csv", "test_custom.csv"))，就完成dataset的扩容
+    print('df7.axes',df7.shape)
+    # df7.to_csv(os.path.join(DATA_PATH, 'wangyi-2.csv'), index=False)
+
