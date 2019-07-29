@@ -59,14 +59,25 @@ def ExtendDataFrameToSize(dataframe,size):
     :param size: 扩展到指定size的大小。
     :return: 比如原csv是12行，size输入25，那么csv至少扩展到25以上，即是12 *2 *2 =48，返回48的大小。
     '''
-    if dataframe.shape[0] > size :
+    if dataframe.shape[0] == size :
         return dataframe
+    elif dataframe.shape[0] > size :
+        # 裁剪csv到size大小
+        return dataframe[0:size]
     else:
         dataframe = pd.concat([dataframe,dataframe.copy(deep=False)])
         return ExtendDataFrameToSize(dataframe, size)
 
 def ExtendCsvToSize(source_csv , label='label', size=-1):
+    '''
+
+    :param source_csv: dataframe格式，数据源
+    :param label: 筛选的label
+    :param size: 定义需要扩容的size
+    :return: 扩容后的CSV，dataframe格式
+    '''
     df5 = pd.DataFrame()
+    #TODO range（10）还没改
     for i in range(10):
         if source_csv[source_csv[label] == i].empty :
             break
@@ -76,6 +87,7 @@ def ExtendCsvToSize(source_csv , label='label', size=-1):
     # df5.to_csv(os.path.join(DATA_PATH, 'wangyi-1.csv'), index=False)
     return df5
 
+# TODO 构建一个函数扩容csv
 
 if __name__=='__main__':
     get_csv = readCsv_onFlyai(True)
@@ -106,7 +118,9 @@ if __name__=='__main__':
     df6 =ExtendCsvToSize(df , label='label' ,size=30)
     print('df6.shape',df6.shape)
 
+    # 构建成函数，类似一键扩容，生成返回对应dataset
     df7 = pd.DataFrame(data=readCustomCsv("dev.csv", "dev.csv").data)
-    df7 =ExtendCsvToSize(df7 ,size=36)
+    df7 =ExtendCsvToSize(df7 ,size=16)
     print('df7.shape', df7.shape)
     df7.to_csv(os.path.join(DATA_PATH, 'wangyi-2.csv'), index=False)
+    #TODO 这里读取wangyi-2.csv ，并用dataset2 = Dataset(source=readCustomCsv("test_custom.csv", "test_custom.csv"))，就完成dataset的扩容
