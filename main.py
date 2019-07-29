@@ -28,8 +28,8 @@ args = parser.parse_args()
 flyai库中的提供的数据处理方法
 传入整个数据训练多少轮，每批次批大小
 '''
-dataset = Dataset(epochs=args.EPOCHS, batch=args.BATCH)
-dataset2 = wangyi.DatasetExtendToSize(False,1773 ,10)
+dataset2 = Dataset(epochs=args.EPOCHS, batch=args.BATCH)
+dataset = wangyi.DatasetExtendToSize(False,1773 ,10)
 model = Model(dataset2)
 '''
 dataset.get_train_length() : 5866
