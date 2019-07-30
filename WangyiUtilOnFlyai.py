@@ -36,6 +36,14 @@ def readCsv_onFlyai(readCsvOnLocal=True):
                                               {'train_url': os.path.join(DATA_PATH, "train.csv"),
                                                'test_url': os.path.join(DATA_PATH, "test.csv")}, line)
     # 实际上返回的是 flyai.source.csv_source.py的 Csv类, source_csv.data 是train_csv文件,source_csv.val 是test_csv文件
+    dataframe_train = pd.DataFrame(data=source_csv.data)
+    dataframe_test = pd.DataFrame(data=source_csv.val)
+    # TODO 统计每类数量
+    print('train data 透视表')
+    print(pd.pivot_table(dataframe_train, values=['label'], index=['label'], aggfunc='count'))
+    print('test data 透视表')
+    print(pd.pivot_table(dataframe_test, values=['label'], index=['label'], aggfunc='count'))
+
     return source_csv
 
 
@@ -85,7 +93,7 @@ def ExtendCsvToSize(source_csv , label='label', size=-1 ,classify_count = -1):
     return df5
 
 
-def DatasetExtendToSize(readCsvOnLocal=True , size=36 ,classify_count=10):
+def DatasetExtendToSize(readCsvOnLocal=True , train_size=36 ,val_size=36,classify_count=10):
     '''
 
     :param readCsvOnLocal: 设置True运行在本地使用，设置FALSE 运行在flyai服务器上使用
@@ -99,8 +107,8 @@ def DatasetExtendToSize(readCsvOnLocal=True , size=36 ,classify_count=10):
     dataframe_train = pd.DataFrame(data=flyai_source.data)
     dataframe_test = pd.DataFrame(data=flyai_source.val)
     # step 2 : extend csv(dataframe)
-    dataframe_train = ExtendCsvToSize(dataframe_train, size=size, classify_count=classify_count)
-    dataframe_test = ExtendCsvToSize(dataframe_test, size=size, classify_count=classify_count)
+    dataframe_train = ExtendCsvToSize(dataframe_train, size=train_size, classify_count=classify_count)
+    dataframe_test = ExtendCsvToSize(dataframe_test, size=val_size, classify_count=classify_count)
     # step 3 : save csv
     dataframe_train.to_csv(os.path.join(DATA_PATH, 'wangyi-train.csv'), index=False)
     dataframe_test.to_csv(os.path.join(DATA_PATH, 'wangyi-test.csv'), index=False)
@@ -111,13 +119,13 @@ def DatasetExtendToSize(readCsvOnLocal=True , size=36 ,classify_count=10):
 if __name__=='__main__':
 
 
-    dataset2 =DatasetExtendToSize(True , 36,10)
+    dataset2 =DatasetExtendToSize(True , train_size=40, val_size=20,classify_count= 10)
     print('dataset2.get_train_length()', dataset2.get_train_length())
     print('dataset2.get_validation_length()', dataset2.get_validation_length())
     xx_train , yy_train= dataset2.next_train_batch()
     print('yy_train.shape',yy_train.shape)
     df = pd.DataFrame(data=readCustomCsv("test_custom.csv", "test_custom.csv").data)
-    print(df[df['label']==3])
+    # print(df[df['label']==3])
 
 
     # 构建成函数，类似一键扩容，生成返回对应dataset

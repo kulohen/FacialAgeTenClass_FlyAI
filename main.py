@@ -29,8 +29,9 @@ flyai库中的提供的数据处理方法
 传入整个数据训练多少轮，每批次批大小
 '''
 dataset2 = Dataset(epochs=args.EPOCHS, batch=args.BATCH)
-dataset = wangyi.DatasetExtendToSize(False,1773 ,10)
-model = Model(dataset2)
+dataset = wangyi.DatasetExtendToSize(False ,train_size=1773,val_size= 572,classify_count=10)
+# dataset = wangyi.DatasetExtendToSize(True ,train_size=40,val_size= 30,classify_count=10)
+model = Model(dataset)
 '''
 dataset.get_train_length() : 5866
 dataset.get_all_validation_data(): 1956
@@ -64,7 +65,7 @@ MODEL_PATH_FILE = os.path.join(MODEL_PATH, KERAS_MODEL_NAME)
 
 # callbacks回调函数的定义
 savebestonly = ModelCheckpoint( filepath =MODEL_PATH_FILE, monitor='val_loss', mode='auto', save_best_only=True, verbose=1)
-early_stopping = EarlyStopping(monitor='loss', patience=20 ,verbose=1,min_delta=0.003)
+early_stopping = EarlyStopping(monitor='loss', patience=20 ,verbose=1,min_delta=0.03)
 xuexilv = ReduceLROnPlateau(monitor='loss',patience=5, verbose=1)
 
 
@@ -119,8 +120,8 @@ cw = {
 
 
 history = sqeue.fit(
-    x=x_train_and_x_val,
-    y=y_train_and_y_val,
+    x=x_train,
+    y=y_train,
     batch_size=args.BATCH,
     epochs=args.EPOCHS,
     verbose=2,
@@ -128,7 +129,8 @@ history = sqeue.fit(
     # validation_split=0.,
     validation_data=(x_val,y_val),
     shuffle=True,
-    class_weight=cw
+    # class_weight=cw
+    class_weight = 'auto'
 )
 
 
