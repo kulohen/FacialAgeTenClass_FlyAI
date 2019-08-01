@@ -49,6 +49,7 @@ class Processor(Base):
     '''
 
     def input_y(self, label):
+        # TODO 改回原版本。不然很卡
         one_hot_label = numpy.zeros([10])  ##生成全0矩阵
         if label > -1 and label < 10 :
             one_hot_label[label] = 1  ##相应标签位置置

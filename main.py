@@ -56,7 +56,7 @@ sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 # sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
-              optimizer='adam',
+              optimizer=sgd,
               metrics=['accuracy'])
 
 # 模型保存的路径
@@ -67,8 +67,8 @@ MODEL_PATH_FILE = os.path.join(MODEL_PATH, KERAS_MODEL_NAME)
 savebestonly = ModelCheckpoint( filepath =MODEL_PATH_FILE, monitor='val_loss', mode='auto', save_best_only=True, verbose=1)
 save_acc = ModelCheckpoint( filepath =MODEL_PATH_FILE, monitor='val_acc', mode='auto', save_best_only=True, verbose=1)
 
-early_stopping = EarlyStopping(monitor='loss', patience=20 ,verbose=1,min_delta=0.03)
-xuexilv = ReduceLROnPlateau(monitor='loss',patience=5, verbose=1)
+early_stopping = EarlyStopping(monitor='loss', patience=10 ,verbose=1,min_delta=0.003)
+xuexilv = ReduceLROnPlateau(monitor='loss',patience=4, verbose=1)
 
 '''
 # 训练集、验证集合并训练
