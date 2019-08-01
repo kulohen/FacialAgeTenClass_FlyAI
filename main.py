@@ -20,8 +20,8 @@ import WangyiUtilOnFlyai as wangyi
 获取数据值，是否train set有问题？？读取label
 '''
 parser = argparse.ArgumentParser()
-parser.add_argument("-e", "--EPOCHS", default=30, type=int, help="train epochs")
-parser.add_argument("-b", "--BATCH", default=32, type=int, help="batch size")
+parser.add_argument("-e", "--EPOCHS", default=10, type=int, help="train epochs")
+parser.add_argument("-b", "--BATCH", default=8, type=int, help="batch size")
 args = parser.parse_args()
 
 '''
@@ -65,12 +65,18 @@ MODEL_PATH_FILE = os.path.join(MODEL_PATH, KERAS_MODEL_NAME)
 
 # callbacks回调函数的定义
 savebestonly = ModelCheckpoint( filepath =MODEL_PATH_FILE, monitor='val_loss', mode='auto', save_best_only=True, verbose=1)
+save_acc = ModelCheckpoint( filepath =MODEL_PATH_FILE, monitor='val_acc', mode='auto', save_best_only=True, verbose=1)
+
 early_stopping = EarlyStopping(monitor='loss', patience=20 ,verbose=1,min_delta=0.03)
 xuexilv = ReduceLROnPlateau(monitor='loss',patience=5, verbose=1)
 
-
+'''
+# 训练集、验证集合并训练
+'''
 x_train_and_x_val = np.concatenate((x_train, x_val),axis=0)
 y_train_and_y_val= np.concatenate((y_train , y_val),axis=0)
+print('x_train_and_x_val.shape :', x_train_and_x_val.shape)
+print('y_train_and_y_val.sum():',y_train_and_y_val.sum(axis=0))
 
 # 采用数据增强ImageDataGenerator
 datagen= ImageDataGenerator(
@@ -87,8 +93,7 @@ data_iter_train = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_size=
 data_iter_validation = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_size=args.BATCH , save_to_dir = None, subset='validation')
 # 验证集可以也写成imagedatagenerator
 
-print('x_train_and_x_val.shape :', x_train_and_x_val.shape)
-print('y_train_and_y_val.sum():',y_train_and_y_val.sum(axis=0))
+
 '''
 history = sqeue.fit_generator(
     generator= data_iter_train,
@@ -106,16 +111,16 @@ history = sqeue.fit_generator(
 '''
 # 设置不同比例权重
 cw = {
-    0:33,
-    1:80,
-    2:64,
-    3:93,
-    4:144,
-    5:104,
-    6:150,
-    7:263,
-    8:309,
-    9:1117
+    0:1,
+    1:1,
+    2:1,
+    3:1,
+    4:1,
+    5:1,
+    6:1,
+    7:2,
+    8:3,
+    9:11
 }
 
 
@@ -125,12 +130,12 @@ history = sqeue.fit(
     batch_size=args.BATCH,
     epochs=args.EPOCHS,
     verbose=2,
-    callbacks= [ savebestonly, xuexilv,early_stopping],
+    callbacks= [ savebestonly, save_acc, xuexilv,early_stopping],
     # validation_split=0.,
     validation_data=(x_val,y_val),
     shuffle=True,
-    # class_weight=cw
-    class_weight = 'auto'
+    class_weight=cw
+    # class_weight = 'auto'
 )
 
 
