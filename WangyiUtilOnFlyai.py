@@ -93,7 +93,7 @@ def ExtendCsvToSize(source_csv , label='label', size=-1 ,classify_count = -1):
     return df5
 
 
-def DatasetExtendToSize(readCsvOnLocal=True , train_size=36 ,val_size=36,classify_count=10):
+def DatasetExtendToSize(readCsvOnLocal=True , train_size=32 ,val_size=32,classify_count=10):
     '''
 
     :param readCsvOnLocal: 设置True运行在本地使用，设置FALSE 运行在flyai服务器上使用
