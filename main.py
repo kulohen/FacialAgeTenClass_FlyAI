@@ -62,8 +62,9 @@ x = base_model.output
 x = Flatten()(x)
 x = Dense(1024, activation="relu")(x)
 x = Dropout(0.5)(x)
-x = Dense(1024)(x)
 x = LeakyReLU()(x)
+x = Dense(1024)(x)
+
 predictions = Dense(num_classes, activation="softmax")(x)
 
 # 创建最终模型
