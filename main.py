@@ -2,7 +2,7 @@
 import argparse
 from keras.applications import ResNet50,VGG16
 from flyai.dataset import Dataset
-from keras.layers import Conv2D, MaxPool2D, Dropout, Flatten, Dense, Activation, MaxPooling2D,ZeroPadding2D,BatchNormalization
+from keras.layers import Conv2D, MaxPool2D, Dropout, Flatten, Dense, Activation, MaxPooling2D,ZeroPadding2D,BatchNormalization,LeakyReLU
 from keras.models import Model as keras_model
 from model import Model
 from path import MODEL_PATH
@@ -28,7 +28,7 @@ except OSError:
 '''
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--EPOCHS", default=10, type=int, help="train epochs")
-parser.add_argument("-b", "--BATCH", default=24, type=int, help="batch size")
+parser.add_argument("-b", "--BATCH", default=8, type=int, help="batch size")
 args = parser.parse_args()
 
 '''
@@ -36,31 +36,34 @@ flyai库中的提供的数据处理方法
 传入整个数据训练多少轮，每批次批大小
 '''
 dataset2 = Dataset(epochs=args.EPOCHS, batch=args.BATCH)
-# dataset = wangyi.DatasetExtendToSize(False ,train_size=1773,val_size= 572,classify_count=10)
-dataset = wangyi.DatasetExtendToSize(True ,train_size=40,val_size= 30,classify_count=10)
+dataset = wangyi.DatasetExtendToSize(False ,train_size=1773,val_size= 572,classify_count=10)
+# dataset = wangyi.DatasetExtendToSize(True ,train_size=20,val_size= 20,classify_count=10)
 model = Model(dataset)
 '''
 dataset.get_train_length() : 5866
 dataset.get_all_validation_data(): 1956
 
 '''
+print('dataset.get_train_length()',dataset.get_train_length())
+print('dataset.get_validation_length()',dataset.get_validation_length())
 x_train, y_train , x_val, y_val =dataset.get_all_processor_data()
 
 '''
 实现自己的网络机构
 '''
 num_classes = 10
-base_model =ResNet50( weights=weights_path, input_shape=(224, 224, 3), include_top=False)
+base_model =ResNet50( weights=None, input_shape=(300, 300, 3), include_top=False)
 # 冻结不打算训练的层。这里我冻结了前5层。
-# for layer in base_model.layers[:5]:
-#     layer.trainable = False
+for layer in base_model.layers[:5]:
+    layer.trainable = False
 
 # 增加定制层
 x = base_model.output
 x = Flatten()(x)
-# x = Dense(1024, activation="relu")(x)
-# x = Dropout(0.5)(x)
-# x = Dense(1024, activation="relu")(x)
+x = Dense(1024, activation="relu")(x)
+x = Dropout(0.5)(x)
+x = Dense(1024)(x)
+x = LeakyReLU()(x)
 predictions = Dense(num_classes, activation="softmax")(x)
 
 # 创建最终模型
@@ -71,10 +74,10 @@ sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 
 
 # 输出模型的整体信息
-# sqeue.summary()
+sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
-              optimizer=sgd,
+              optimizer='adam',
               metrics=['accuracy'])
 
 # 模型保存的路径
