@@ -36,8 +36,8 @@ flyai库中的提供的数据处理方法
 传入整个数据训练多少轮，每批次批大小
 '''
 dataset2 = Dataset(epochs=args.EPOCHS, batch=args.BATCH)
-dataset = wangyi.DatasetExtendToSize(False ,train_size=1773,val_size= 572,classify_count=10)
-# dataset = wangyi.DatasetExtendToSize(True ,train_size=20,val_size= 20,classify_count=10)
+# dataset = wangyi.DatasetExtendToSize(False ,train_size=1773,val_size= 572,classify_count=10)
+dataset = wangyi.DatasetExtendToSize(True ,train_size=40,val_size= 40,classify_count=10)
 model = Model(dataset)
 '''
 dataset.get_train_length() : 5866
@@ -52,10 +52,11 @@ x_train, y_train , x_val, y_val =dataset.get_all_processor_data()
 实现自己的网络机构
 '''
 num_classes = 10
-base_model =ResNet50( weights=None, input_shape=(300, 300, 3), include_top=False)
+'''
+base_model =ResNet50( weights=None, input_shape=(224, 224, 3), include_top=False)
 # 冻结不打算训练的层。这里我冻结了前5层。
-for layer in base_model.layers[:5]:
-    layer.trainable = False
+# for layer in base_model.layers[:5]:
+#    layer.trainable = False
 
 # 增加定制层
 x = base_model.output
@@ -69,6 +70,8 @@ predictions = Dense(num_classes, activation="softmax")(x)
 
 # 创建最终模型
 sqeue = keras_model(input = base_model.input, output = predictions)
+'''
+sqeue = ResNet50( weights=None, input_shape=(300, 300, 3), include_top=True, classes=num_classes)
 
 
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
