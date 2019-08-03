@@ -15,7 +15,14 @@ import sys
 import os
 from model import KERAS_MODEL_NAME
 import WangyiUtilOnFlyai as wangyi
+# 必须使用该方法下载模型，然后加载
+from flyai.utils import remote_helper
 
+try:
+    weights_path = remote_helper.get_remote_date(
+        "https://www.flyai.com/m/v0.7|inception_resnet_v2_weights_tf_dim_ordering_tf_kernels_notop.h5")
+except OSError:
+    weights_path = 'imagenet'
 '''
 2019-07-26
 获取数据值，是否train set有问题？？读取label
@@ -43,20 +50,29 @@ print('dataset.get_train_length()',dataset.get_train_length())
 print('dataset.get_validation_length()',dataset.get_validation_length())
 x_train, y_train , x_val, y_val =dataset.get_all_processor_data()
 
-dataset_slice = wangyi.getDatasetListByClassfy(classify_count=num_classes)
-x_val_slice,y_val_slice = [],[]
-for epoch in range(num_classes):
-    x_tmp,y_tmp = dataset_slice[epoch].get_all_validation_data()
-    x_val_slice.append(x_tmp)
-    y_val_slice.append(y_tmp)
-
 '''
 实现自己的网络机构
 '''
 
 # sqeue = ResNet50( weights=None, include_top=True, input_shape=(300, 300, 3),classes=num_classes)
-sqeue = InceptionResNetV2(weights=None, include_top=True ,classes=num_classes)
+base_model = InceptionResNetV2(weights=weights_path, include_top=False)
+# 冻结不打算训练的层。这里我冻结了前5层。
+for layer in base_model.layers:
+    layer.trainable = False
 
+# 增加定制层
+x = base_model.output
+# x = Flatten()(x)
+x = Dense(1024, activation="relu")(x)
+x = Dropout(0.5)(x)
+x = Dense(1024)(x)
+x = Dropout(0.5)(x)
+# Classification block
+x = GlobalAveragePooling2D(name='avg_pool')(x)
+predictions = Dense(num_classes, activation='softmax', name='predictions')(x)
+
+# 创建最终模型
+sqeue = keras_model(input = base_model.input, output = predictions)
 
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 
@@ -69,7 +85,7 @@ sqeue.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 # 模型保存的路径
-# model.check( MODEL_PATH)
+model.check( MODEL_PATH)
 MODEL_PATH_FILE = os.path.join(MODEL_PATH, KERAS_MODEL_NAME)
 
 # callbacks回调函数的定义
@@ -80,46 +96,22 @@ early_stopping = EarlyStopping(monitor='loss', patience=20 ,verbose=1,min_delta=
 xuexilv = ReduceLROnPlateau(monitor='loss',patience=4, verbose=1)
 
 
-history_train = 0
-history_test = 0
-best_score_by_acc = 0.
-best_score_by_loss = 999.
-for epoch in range(args.EPOCHS):
-    history_train = sqeue.fit(
-        x=x_train,
-        y=y_train,
-        batch_size=args.BATCH,
-        verbose=2,
-        callbacks= [ xuexilv,early_stopping],
-        # validation_split=0.,
-        validation_data=(x_val,y_val),
-        shuffle=True
-        # class_weight=cw
-        # class_weight = 'auto'
-    )
-    print(history_train)
-    sum_loss = 0.
-    sum_acc = 0.
-    for iters in range(num_classes):
-        history_test = sqeue.evaluate(
-            x=x_val_slice[iters],
-            y=y_val_slice[iters],
-            batch_size=None,
-            verbose=2
-        )
-        print(history_test)
-        sum_loss +=history_test[0]
-        sum_acc +=history_test[1]
-    # save best loss
-    if best_score_by_loss > sum_loss/num_classes:
-        model.save_model(model=sqeue,path=MODEL_PATH,overwrite=True)
-        best_score_by_loss = sum_loss/num_classes
-        print('保存了最佳模型by val_loss')
-    # save best acc
-    if best_score_by_acc < sum_acc/num_classes:
-        model.save_model(model=sqeue, path=MODEL_PATH, overwrite=True)
-        best_score_by_acc = sum_acc/num_classes
-        print('保存了最佳模型by val_acc')
 
-    print('步骤 %d / %d: 自定义10类平均 val_loss is %.4f, val_acc is %.4f' %(epoch+1,args.EPOCHS, sum_loss/num_classes , sum_acc/num_classes))
+
+history = sqeue.fit(
+    x=x_train,
+    y=y_train,
+    batch_size=args.BATCH,
+    epochs=args.EPOCHS,
+    verbose=2,
+    callbacks= [ savebestonly, save_acc, xuexilv,early_stopping],
+    # validation_split=0.,
+    validation_data=(x_val,y_val),
+    shuffle=True
+    # class_weight=cw
+    # class_weight = 'auto'
+)
+
+
+# print(history.history)
 

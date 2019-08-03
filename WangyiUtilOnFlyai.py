@@ -69,6 +69,23 @@ class SourceByWangyi(Source):
             pass
         self.source_csv = self.__source
 
+    def get_sliceCSVbyClassify(self,label='label',classify_count=10):
+        # step 1 : csv to dataframe
+        dataframe_train = pd.DataFrame(data=self.source_csv.data)
+        dataframe_test = pd.DataFrame(data=self.source_csv.val)
+
+        # step 2 : 筛选 csv
+        list_path_train,list_path_test = [],[]
+        for epoch in range(classify_count):
+            path_train = os.path.join(DATA_PATH, 'wangyi-train-classfy-' + str(epoch) + '.csv')
+            dataframe_train[dataframe_train[label] == epoch].to_csv(path_train,index=False)
+            list_path_train.append(path_train)
+
+            path_test = os.path.join(DATA_PATH, 'wangyi-test-classfy-' + str(epoch) + '.csv')
+            dataframe_test[dataframe_test[label] == epoch].to_csv(path_test,index=False)
+            list_path_test.append(path_test)
+
+        return list_path_train,list_path_test
 
 
 def readCsv_onFlyai(readCsvOnLocal=True):
@@ -168,23 +185,17 @@ def DatasetExtendToSize(readCsvOnLocal=True , train_size=32 ,val_size=32,classif
     dataset_extend_newone = Dataset(source=readCustomCsv("wangyi-train.csv", "wangyi-test.csv"))
     return dataset_extend_newone
 
+def getDatasetListByClassfy(classify_count=10):
+    test_source = SourceByWangyi()
+    xx, yy = test_source.get_sliceCSVbyClassify(classify_count=classify_count)
+    list_tmp=[]
+    for epoch in range(classify_count):
+        dataset = Dataset(source=readCustomCsv(xx[epoch], yy[epoch]))
+        list_tmp.append(dataset)
+
+    return list_tmp
+
 if __name__=='__main__':
 
-    test_source = SourceByWangyi()
-    print('test_source.get_train_length()',test_source.source_csv)
-    dataset2 =DatasetExtendToSize(True , train_size=40, val_size=20,classify_count= 10)
-    print('dataset2.get_train_length()', dataset2.get_train_length())
-    print('dataset2.get_validation_length()', dataset2.get_validation_length())
-    # xx_train , yy_train= dataset2.next_train_batch()
-    # print('yy_train.shape',yy_train.shape)
-    # df = pd.DataFrame(data=readCustomCsv("test_custom.csv", "test_custom.csv").data)
-    # # print(df[df['label']==3])
-    #
-    #
-    # # 构建成函数，类似一键扩容，生成返回对应dataset
-    # df7 = pd.DataFrame(data=readCustomCsv("dev.csv", "dev.csv").data)
-    # df7 =ExtendCsvToSize(df7 ,size=16,classify_count=10)
-    # print('df7.shape', df7.shape)
-    # print('df7.axes',df7.shape)
-    # df7.to_csv(os.path.join(DATA_PATH, 'wangyi-2.csv'), index=False)
+    readCsv_onFlyai(readCsvOnLocal=True)
 
