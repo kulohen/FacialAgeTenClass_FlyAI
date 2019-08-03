@@ -2,7 +2,7 @@
 import argparse
 from keras.applications import ResNet50,VGG16,InceptionResNetV2
 from flyai.dataset import Dataset
-from keras.layers import Conv2D, MaxPool2D, Dropout, Flatten, Dense, Activation, MaxPooling2D,ZeroPadding2D,BatchNormalization,LeakyReLU
+from keras.layers import Conv2D, MaxPool2D, Dropout, Flatten, Dense, Activation, MaxPooling2D,ZeroPadding2D,BatchNormalization,LeakyReLU,GlobalAveragePooling2D
 from keras.models import Model as keras_model
 from model import Model
 from path import MODEL_PATH
@@ -20,7 +20,7 @@ from flyai.utils import remote_helper
 
 try:
     weights_path = remote_helper.get_remote_date(
-        "https://www.flyai.com/m/v0.7|inception_resnet_v2_weights_tf_dim_ordering_tf_kernels.h5")
+        "https://www.flyai.com/m/v0.7|inception_resnet_v2_weights_tf_dim_ordering_tf_kernels_notop.h5")
 except OSError:
     weights_path = 'imagenet'
 '''
@@ -55,7 +55,24 @@ x_train, y_train , x_val, y_val =dataset.get_all_processor_data()
 '''
 
 # sqeue = ResNet50( weights=None, include_top=True, input_shape=(300, 300, 3),classes=num_classes)
-sqeue = InceptionResNetV2(weights=None, include_top=True, input_shape=(299, 299, 3),classes=num_classes)
+base_model = InceptionResNetV2(weights=weights_path, include_top=False)
+# 冻结不打算训练的层。这里我冻结了前5层。
+for layer in base_model.layers:
+    layer.trainable = False
+
+# 增加定制层
+x = base_model.output
+# x = Flatten()(x)
+x = Dense(1024, activation="relu")(x)
+x = Dropout(0.5)(x)
+x = Dense(1024)(x)
+x = Dropout(0.5)(x)
+# Classification block
+x = GlobalAveragePooling2D(name='avg_pool')(x)
+predictions = Dense(num_classes, activation='softmax', name='predictions')(x)
+
+# 创建最终模型
+sqeue = keras_model(input = base_model.input, output = predictions)
 
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 
