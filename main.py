@@ -37,8 +37,8 @@ flyai库中的提供的数据处理方法
 传入整个数据训练多少轮，每批次批大小
 '''
 num_classes = 10
-dataset_hehe = Dataset(epochs=args.EPOCHS, batch=args.BATCH)
-dataset = wangyi.DatasetExtendToSize(False ,train_size=1773,val_size= 572,classify_count=num_classes)
+dataset = Dataset(epochs=args.EPOCHS, batch=args.BATCH)
+# dataset = wangyi.DatasetExtendToSize(False ,train_size=1773,val_size= 572,classify_count=num_classes)
 # dataset = wangyi.DatasetExtendToSize(True ,train_size=40,val_size= 40,classify_count=num_classes)
 model = Model(dataset)
 '''
@@ -55,13 +55,13 @@ x_train, y_train , x_val, y_val =dataset.get_all_processor_data()
 '''
 
 # sqeue = ResNet50( weights=None, include_top=True, input_shape=(300, 300, 3),classes=num_classes)
-sqeue = InceptionResNetV2(weights=None, include_top=True, input_shape=(300, 300, 3),classes=num_classes)
+sqeue = InceptionResNetV2(weights=None, include_top=True, input_shape=(299, 299, 3),classes=num_classes)
 
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 
 
 # 输出模型的整体信息
-sqeue.summary()
+# sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
               optimizer='adam',
