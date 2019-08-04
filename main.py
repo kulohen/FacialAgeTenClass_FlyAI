@@ -7,7 +7,7 @@ from keras.models import Model as keras_model
 from model import Model
 from path import MODEL_PATH
 from keras.callbacks import EarlyStopping, TensorBoard,ModelCheckpoint,ReduceLROnPlateau
-from keras.optimizers import SGD,adam
+from keras.optimizers import SGD,Adam
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
@@ -21,8 +21,8 @@ import WangyiUtilOnFlyai as wangyi
 获取数据值，是否train set有问题？？读取label
 '''
 parser = argparse.ArgumentParser()
-parser.add_argument("-e", "--EPOCHS", default=10, type=int, help="train epochs")
-parser.add_argument("-b", "--BATCH", default=8, type=int, help="batch size")
+parser.add_argument("-e", "--EPOCHS", default=30, type=int, help="train epochs")
+parser.add_argument("-b", "--BATCH", default=16, type=int, help="batch size")
 args = parser.parse_args()
 
 '''
@@ -59,13 +59,13 @@ sqeue = InceptionResNetV2(weights=None, include_top=True ,classes=num_classes)
 
 
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-
+adam = Adam(lr=0.001,epsilon=1e-8)
 
 # 输出模型的整体信息
 # sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
-              optimizer='adam',
+              optimizer=adam,
               metrics=['accuracy'])
 
 # 模型保存的路径
@@ -97,7 +97,7 @@ for epoch in range(args.EPOCHS):
         # class_weight=cw
         # class_weight = 'auto'
     )
-    print(history_train)
+    print('learning rate:' ,history_train.history['lr'][0])
     sum_loss = 0.
     sum_acc = 0.
     for iters in range(num_classes):
@@ -107,19 +107,27 @@ for epoch in range(args.EPOCHS):
             batch_size=None,
             verbose=2
         )
-        print(history_test)
+        print('class-%d __ loss :%.4f , acc :%.4f' %(iters ,history_test[0],history_test[1]))
         sum_loss +=history_test[0]
         sum_acc +=history_test[1]
+    # TODO train loss小于 0.7 ，开始保存h5（最佳的val_acc）,同时开始降低学习率
+    if history_train.history['loss'][0] >0.7 :
+        pass
+    else:
+        # save best acc
+        if best_score_by_acc < sum_acc / num_classes:
+            model.save_model(model=sqeue, path=MODEL_PATH, overwrite=True)
+            best_score_by_acc = sum_acc / num_classes
+            best_score_by_loss = sum_loss / num_classes
+            print('保存了最佳模型by val_acc')
     # save best loss
-    if best_score_by_loss > sum_loss/num_classes:
-        model.save_model(model=sqeue,path=MODEL_PATH,overwrite=True)
-        best_score_by_loss = sum_loss/num_classes
-        print('保存了最佳模型by val_loss')
-    # save best acc
-    if best_score_by_acc < sum_acc/num_classes:
-        model.save_model(model=sqeue, path=MODEL_PATH, overwrite=True)
-        best_score_by_acc = sum_acc/num_classes
-        print('保存了最佳模型by val_acc')
+    # if best_score_by_loss > sum_loss/num_classes:
+    #     model.save_model(model=sqeue,path=MODEL_PATH,overwrite=True)
+    #     best_score_by_loss = sum_loss/num_classes
+    #     print('保存了最佳模型by val_loss')
 
-    print('步骤 %d / %d: 自定义10类平均 val_loss is %.4f, val_acc is %.4f' %(epoch+1,args.EPOCHS, sum_loss/num_classes , sum_acc/num_classes))
 
+    print('步骤 %d / %d: 自定义10类平均 val_loss is %.4f, val_acc is %.4f\n' %(epoch+1,args.EPOCHS, sum_loss/num_classes , sum_acc/num_classes))
+
+print('best_score_by_acc :%.4f' %best_score_by_acc)
+print('best_score_by_loss :%.4f' %best_score_by_loss)
