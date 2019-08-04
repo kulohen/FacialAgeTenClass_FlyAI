@@ -37,6 +37,7 @@ model = Model(dataset)
 '''
 dataset.get_train_length() : 5866
 dataset.get_all_validation_data(): 1956
+predict datas :  1956
 
 '''
 print('dataset.get_train_length()',dataset.get_train_length())
@@ -111,7 +112,7 @@ for epoch in range(args.EPOCHS):
         sum_loss +=history_test[0]
         sum_acc +=history_test[1]
     # TODO train loss小于 0.7 ，开始保存h5（最佳的val_acc）,同时开始降低学习率
-    if history_train.history['loss'][0] >0.7 :
+    if history_train.history['loss'][0] >20 :
         pass
     else:
         # save best acc
