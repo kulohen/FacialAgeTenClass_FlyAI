@@ -60,7 +60,7 @@ sqeue = InceptionResNetV2(weights=None, include_top=True ,classes=num_classes)
 
 
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-adam = Adam(lr=0.001,epsilon=1e-8)
+adam = Adam(lr=0.003,epsilon=1e-8)
 
 # 输出模型的整体信息
 # sqeue.summary()
@@ -86,26 +86,26 @@ cw_train = {
     1:1.2,
     2:1.2,
     3:1.2,
-    4:0.01,
+    4:0.,
     5:1.5,
-    6:0.01,
-    7:0.01,
-    8:0.01,
-    9:0.01
+    6:0.,
+    7:0.,
+    8:0.,
+    9:0.
 }
 eval_weights = {
     0:3,
     1:1.2,
     2:1.5,
     3:1,
-    4:0.01,
+    4:0.,
     5:0.9,
-    6:0.01,
-    7:0.01,
-    8:0.01,
-    9:0.01
+    6:0.,
+    7:0.,
+    8:0.,
+    9:0.
 }
-eval_weights_count = 7.65 # 应该是eval_weights的10个求和
+eval_weights_count = 7.6 # 应该是eval_weights的10个求和
 history_train = 0
 history_test = 0
 best_score_by_acc = 0.
@@ -124,6 +124,8 @@ for epoch in range(args.EPOCHS):
         # class_weight = 'auto'
     )
     print('learning rate:' ,history_train.history['lr'][0])
+    #TODO 查看history的shape，history是叠加的？还是单独1条。用以决定fit()中initial_epoch 是否启用？
+    print('history_train.history.shape',history_train.history.shape)
     sum_loss = 0.
     sum_acc = 0.
     for iters in range(num_classes):
@@ -139,7 +141,7 @@ for epoch in range(args.EPOCHS):
         #     sum_acc +=history_test[1]
         sum_loss += history_test[0] * eval_weights[iters]
         sum_acc += history_test[1] * eval_weights[iters]
-    # TODO train loss小于 0.7 (ln0.5)，开始保存h5（最佳的val_acc）,同时开始降低学习率
+    #  train loss小于 0.7 (ln0.5)，开始保存h5（最佳的val_acc）,同时开始降低学习率
     if history_train.history['loss'][0] >0.7 :
         pass
     else:
@@ -148,15 +150,36 @@ for epoch in range(args.EPOCHS):
             model.save_model(model=sqeue, path=MODEL_PATH, overwrite=True)
             best_score_by_acc = sum_acc / eval_weights_count
             best_score_by_loss = sum_loss / eval_weights_count
-            print('保存了最佳模型by val_acc')
+            print('【保存】了最佳模型by val_acc')
     # save best loss
     # if best_score_by_loss > sum_loss/num_classes:
     #     model.save_model(model=sqeue,path=MODEL_PATH,overwrite=True)
     #     best_score_by_loss = sum_loss/num_classes
     #     print('保存了最佳模型by val_loss')
 
+    #TODO 调整学习率，且只执行一次
+    if history_train.history['loss'][0] <0.7 and history_train.history['lr'][0] > 0.001:
+        sqeue.compile(loss='categorical_crossentropy',
+                      optimizer=Adam(lr=0.001),
+                      metrics=['accuracy'])
+        print('【学习率】调整为 : 0,001')
+    elif history_train.history['loss'][0] <0.5 and history_train.history['lr'][0] > 0.00033:
+        sqeue.compile(loss='categorical_crossentropy',
+                      optimizer=Adam(lr=0.00033),
+                      metrics=['accuracy'])
+        print('【学习率】调整为 : 0,00033')
+    elif history_train.history['loss'][0] <0.3 and history_train.history['lr'][0] > 0.0001:
+        sqeue.compile(loss='categorical_crossentropy',
+                      optimizer=Adam(lr=0.0001),
+                      metrics=['accuracy'])
+        print('【学习率】调整为 : 0,0001')
+    elif history_train.history['loss'][0] < 0.1 and history_train.history['lr'][0] > 1e-5:
+        sqeue.compile(loss='categorical_crossentropy',
+                      optimizer=Adam(lr=1e-5),
+                      metrics=['accuracy'])
+        print('【学习率】调整为 : 1e-5')
 
-    print('步骤 %d / %d: 自定义10类平均 val_loss is %.4f, val_acc is %.4f\n' %(epoch+1,args.EPOCHS, sum_loss/num_classes , sum_acc/num_classes))
+    print('步骤 %d / %d: 自定义 val_loss is %.4f, val_acc is %.4f\n' %(epoch+1,args.EPOCHS, sum_loss/eval_weights_count , sum_acc/eval_weights_count))
 
 print('best_score_by_acc :%.4f' %best_score_by_acc)
 print('best_score_by_loss :%.4f' %best_score_by_loss)
