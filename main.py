@@ -21,7 +21,7 @@ import WangyiUtilOnFlyai as wangyi
 获取数据值，是否train set有问题？？读取label
 '''
 parser = argparse.ArgumentParser()
-parser.add_argument("-e", "--EPOCHS", default=30, type=int, help="train epochs")
+parser.add_argument("-e", "--EPOCHS", default=50, type=int, help="train epochs")
 parser.add_argument("-b", "--BATCH", default=16, type=int, help="batch size")
 args = parser.parse_args()
 
@@ -83,11 +83,11 @@ xuexilv = ReduceLROnPlateau(monitor='loss',patience=4, verbose=1)
 
 cw_train = {
     0:1,
-    1:1.2,
-    2:1.2,
-    3:1.2,
+    1:2.5,
+    2:2,
+    3:3,
     4:0.,
-    5:1.5,
+    5:3.3,
     6:0.,
     7:0.,
     8:0.,
@@ -110,6 +110,7 @@ history_train = 0
 history_test = 0
 best_score_by_acc = 0.
 best_score_by_loss = 999.
+lr_level=0
 for epoch in range(args.EPOCHS):
     history_train = sqeue.fit(
         x=x_train,
@@ -123,9 +124,9 @@ for epoch in range(args.EPOCHS):
         class_weight=cw_train
         # class_weight = 'auto'
     )
-    print('learning rate:' ,history_train.history['lr'][0])
-    #TODO 查看history的shape，history是叠加的？还是单独1条。用以决定fit()中initial_epoch 是否启用？
-    print('history_train.history.shape',history_train.history.shape)
+    print('learning rate:' ,history_train.history['lr'])
+    # 没有叠加history.查看history的shape，history是叠加的？还是单独1条。用以决定fit()中initial_epoch 是否启用？
+    # print('history_train.history len : ', history_train.history['lr'])
     sum_loss = 0.
     sum_acc = 0.
     for iters in range(num_classes):
@@ -158,26 +159,30 @@ for epoch in range(args.EPOCHS):
     #     print('保存了最佳模型by val_loss')
 
     #TODO 调整学习率，且只执行一次
-    if history_train.history['loss'][0] <0.7 and history_train.history['lr'][0] > 0.001:
+    if history_train.history['loss'][0] <0.7 and lr_level==0:
         sqeue.compile(loss='categorical_crossentropy',
                       optimizer=Adam(lr=0.001),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,001')
-    elif history_train.history['loss'][0] <0.5 and history_train.history['lr'][0] > 0.00033:
+        lr_level = 1
+    elif history_train.history['loss'][0] <0.5 and lr_level==1:
         sqeue.compile(loss='categorical_crossentropy',
                       optimizer=Adam(lr=0.00033),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,00033')
-    elif history_train.history['loss'][0] <0.3 and history_train.history['lr'][0] > 0.0001:
+        lr_level = 2
+    elif history_train.history['loss'][0] <0.3 and lr_level==2:
         sqeue.compile(loss='categorical_crossentropy',
                       optimizer=Adam(lr=0.0001),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,0001')
-    elif history_train.history['loss'][0] < 0.1 and history_train.history['lr'][0] > 1e-5:
+        lr_level = 3
+    elif history_train.history['loss'][0] < 0.1 and lr_level==3:
         sqeue.compile(loss='categorical_crossentropy',
                       optimizer=Adam(lr=1e-5),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 1e-5')
+        lr_level = 4
 
     print('步骤 %d / %d: 自定义 val_loss is %.4f, val_acc is %.4f\n' %(epoch+1,args.EPOCHS, sum_loss/eval_weights_count , sum_acc/eval_weights_count))
 
