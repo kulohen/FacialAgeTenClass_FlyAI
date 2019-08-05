@@ -81,6 +81,31 @@ early_stopping = EarlyStopping(monitor='loss', patience=20 ,verbose=1,min_delta=
 xuexilv = ReduceLROnPlateau(monitor='loss',patience=4, verbose=1)
 
 
+cw_train = {
+    0:1,
+    1:1.2,
+    2:1.2,
+    3:1.2,
+    4:0.01,
+    5:1.5,
+    6:0.01,
+    7:0.01,
+    8:0.01,
+    9:0.01
+}
+eval_weights = {
+    0:3,
+    1:1.2,
+    2:1.5,
+    3:1,
+    4:0.01,
+    5:0.9,
+    6:0.01,
+    7:0.01,
+    8:0.01,
+    9:0.01
+}
+eval_weights_count = 7.65 # 应该是eval_weights的10个求和
 history_train = 0
 history_test = 0
 best_score_by_acc = 0.
@@ -94,8 +119,8 @@ for epoch in range(args.EPOCHS):
         callbacks= [ xuexilv,early_stopping],
         # validation_split=0.,
         validation_data=(x_val,y_val),
-        shuffle=True
-        # class_weight=cw
+        shuffle=True,
+        class_weight=cw_train
         # class_weight = 'auto'
     )
     print('learning rate:' ,history_train.history['lr'][0])
@@ -109,17 +134,20 @@ for epoch in range(args.EPOCHS):
             verbose=2
         )
         print('class-%d __ loss :%.4f , acc :%.4f' %(iters ,history_test[0],history_test[1]))
-        sum_loss +=history_test[0]
-        sum_acc +=history_test[1]
-    # TODO train loss小于 0.7 ，开始保存h5（最佳的val_acc）,同时开始降低学习率
-    if history_train.history['loss'][0] >20 :
+        # if iters ==0 or iters==1 or iters==2 or iters==3 or iters==5 :
+        #     sum_loss +=history_test[0]
+        #     sum_acc +=history_test[1]
+        sum_loss += history_test[0] * eval_weights[iters]
+        sum_acc += history_test[1] * eval_weights[iters]
+    # TODO train loss小于 0.7 (ln0.5)，开始保存h5（最佳的val_acc）,同时开始降低学习率
+    if history_train.history['loss'][0] >0.7 :
         pass
     else:
         # save best acc
-        if best_score_by_acc < sum_acc / num_classes:
+        if best_score_by_acc < sum_acc / eval_weights_count:
             model.save_model(model=sqeue, path=MODEL_PATH, overwrite=True)
-            best_score_by_acc = sum_acc / num_classes
-            best_score_by_loss = sum_loss / num_classes
+            best_score_by_acc = sum_acc / eval_weights_count
+            best_score_by_loss = sum_loss / eval_weights_count
             print('保存了最佳模型by val_acc')
     # save best loss
     # if best_score_by_loss > sum_loss/num_classes:

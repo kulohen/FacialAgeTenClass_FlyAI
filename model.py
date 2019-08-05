@@ -37,9 +37,7 @@ class Model(Base):
         for data in datas:
             data = self.model.predict(self.dataset.predict_data(**data))
             data = self.dataset.to_categorys(data)
-            # TODO 这里改成labels.append(1)，然后去看结果比如 55.88%，乘以len(labels)
-            # labels.append(data)
-            labels.append(9)
+            labels.append(data)
         print('predict datas : ',len(labels))
         return labels
 
