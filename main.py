@@ -7,7 +7,7 @@ from keras.models import Model as keras_model
 from model import Model
 from path import MODEL_PATH
 from keras.callbacks import EarlyStopping, TensorBoard,ModelCheckpoint,ReduceLROnPlateau
-from keras.optimizers import SGD,Adam
+from keras.optimizers import SGD,Adam,RMSprop
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
@@ -22,7 +22,7 @@ import WangyiUtilOnFlyai as wangyi
 '''
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--EPOCHS", default=50, type=int, help="train epochs")
-parser.add_argument("-b", "--BATCH", default=16, type=int, help="batch size")
+parser.add_argument("-b", "--BATCH", default=8, type=int, help="batch size")
 args = parser.parse_args()
 
 '''
@@ -43,6 +43,8 @@ predict datas :  1956
 print('dataset.get_train_length()',dataset.get_train_length())
 print('dataset.get_validation_length()',dataset.get_validation_length())
 x_train, y_train , x_val, y_val =dataset.get_all_processor_data()
+x_train_and_x_val = np.concatenate((x_train, x_val),axis=0)
+y_train_and_y_val= np.concatenate((y_train , y_val),axis=0)
 
 dataset_slice = wangyi.getDatasetListByClassfy(classify_count=num_classes)
 x_val_slice,y_val_slice = [],[]
@@ -66,7 +68,7 @@ adam = Adam(lr=0.003,epsilon=1e-8)
 # sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
-              optimizer=adam,
+              optimizer=RMSprop(lr=0.01),
               metrics=['accuracy'])
 
 # 模型保存的路径
@@ -80,6 +82,19 @@ save_acc = ModelCheckpoint( filepath =MODEL_PATH_FILE, monitor='val_acc', mode='
 early_stopping = EarlyStopping(monitor='loss', patience=20 ,verbose=1,min_delta=0.001)
 xuexilv = ReduceLROnPlateau(monitor='loss',patience=4, verbose=1)
 
+# 采用数据增强ImageDataGenerator
+datagen= ImageDataGenerator(
+    rotation_range=5,
+    width_shift_range=0.02,
+    height_shift_range=0.02,
+    shear_range=0.02,
+    horizontal_flip=True,
+    vertical_flip=True,
+    validation_split=0.25
+)
+# datagen.fit(x_train_and_x_val)
+data_iter_train = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_size=args.BATCH , save_to_dir = None)
+data_iter_validation = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_size=args.BATCH , save_to_dir = None, subset='validation')
 
 cw_train = {
     0:1,
@@ -111,20 +126,33 @@ history_test = 0
 best_score_by_acc = 0.
 best_score_by_loss = 999.
 lr_level=0
+
+
+
 for epoch in range(args.EPOCHS):
-    history_train = sqeue.fit(
-        x=x_train,
-        y=y_train,
-        batch_size=args.BATCH,
-        verbose=2,
-        callbacks= [ xuexilv,early_stopping],
-        # validation_split=0.,
+    # history_train = sqeue.fit(
+    #     x=x_train,
+    #     y=y_train,
+    #     batch_size=args.BATCH,
+    #     verbose=2,
+    #     callbacks= [ xuexilv,early_stopping],
+    #     # validation_split=0.,
+    #     validation_data=(x_val,y_val),
+    #     shuffle=True,
+    #     class_weight=cw_train
+    #     # class_weight = 'auto'
+    # )
+    history_train = sqeue.fit_generator(
+        generator= data_iter_train,
+        steps_per_epoch=250,
         validation_data=(x_val,y_val),
-        shuffle=True,
-        class_weight=cw_train
-        # class_weight = 'auto'
-    )
-    print('learning rate:' ,history_train.history['lr'])
+        validation_steps=1,
+        class_weight= cw_train,
+        epochs =1,
+        verbose=2,
+        workers=6
+)
+    # print('learning rate:' ,history_train.history)
     # 没有叠加history.查看history的shape，history是叠加的？还是单独1条。用以决定fit()中initial_epoch 是否启用？
     # print('history_train.history len : ', history_train.history['lr'])
     sum_loss = 0.
@@ -161,25 +189,25 @@ for epoch in range(args.EPOCHS):
     # 调整学习率，且只执行一次
     if history_train.history['loss'][0] <0.7 and lr_level==0:
         sqeue.compile(loss='categorical_crossentropy',
-                      optimizer=Adam(lr=0.001),
+                      optimizer=RMSprop(lr=0.001),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,001')
         lr_level = 1
     elif history_train.history['loss'][0] <0.3 and lr_level==1:
         sqeue.compile(loss='categorical_crossentropy',
-                      optimizer=Adam(lr=0.00033),
+                      optimizer=RMSprop(lr=0.00033),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,00033')
         lr_level = 2
     elif history_train.history['loss'][0] <0.1 and lr_level==2:
         sqeue.compile(loss='categorical_crossentropy',
-                      optimizer=Adam(lr=0.0001),
+                      optimizer=RMSprop(lr=0.0001),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,0001')
         lr_level = 3
     elif history_train.history['loss'][0] < 0.05 and lr_level==3:
         sqeue.compile(loss='categorical_crossentropy',
-                      optimizer=Adam(lr=1e-5),
+                      optimizer=RMSprop(lr=1e-5),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 1e-5')
         lr_level = 4
