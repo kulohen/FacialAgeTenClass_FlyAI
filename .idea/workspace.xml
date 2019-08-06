@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b94c5bc0-09c6-4e93-99ff-0a82305a544d" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/FacialAgeTenClass_FlyAI.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FacialAgeTenClass_FlyAI.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Google_App_Engine_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Google_App_Engine_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -16,8 +18,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="376">
-              <caret line="176" column="54" lean-forward="true" selection-start-line="176" selection-start-column="54" selection-end-line="176" selection-end-column="54" />
+            <state relative-caret-position="300">
+              <caret line="153" column="61" selection-start-line="153" selection-start-column="61" selection-end-line="153" selection-end-column="61" />
               <folding>
                 <element signature="e#23#38#0" expanded="true" />
               </folding>
@@ -159,6 +161,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -181,7 +184,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -388,7 +390,8 @@
       <workItem from="1564876839293" duration="7615000" />
       <workItem from="1564937106968" duration="3566000" />
       <workItem from="1564965186613" duration="12432000" />
-      <workItem from="1564999417891" duration="3615000" />
+      <workItem from="1564999417891" duration="4038000" />
+      <workItem from="1565051571246" duration="3849000" />
     </task>
     <task id="LOCAL-00001" summary="flyai 脸部识别，从pytorch改成keras">
       <created>1563560902810</created>
@@ -481,11 +484,18 @@
       <option name="project" value="LOCAL" />
       <updated>1564994529011</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="add学习率的调整，并判断history是叠加还是new？">
+      <created>1565004246076</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1565004246076</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="160997000" />
+    <option name="totallyTimeSpent" value="165269000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -498,19 +508,18 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.46458924" visible="true" weight="0.2969169" />
-      <window_info id="Structure" order="1" sideWeight="0.53541076" side_tool="true" visible="true" weight="0.2969169" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.46201232" visible="true" weight="0.30093834" />
+      <window_info id="Structure" order="1" sideWeight="0.5379877" side_tool="true" visible="true" weight="0.30093834" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="1" />
       <window_info anchor="bottom" id="Version Control" order="2" weight="0.32983872" />
       <window_info anchor="bottom" id="Python Console" order="3" />
-      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50310814" side_tool="true" weight="0.3130016" />
+      <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50310814" side_tool="true" weight="0.31161472" />
       <window_info anchor="bottom" id="Message" order="5" />
       <window_info anchor="bottom" id="Find" order="6" weight="0.325" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49689183" weight="0.3101983" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" sideWeight="0.49689183" visible="true" weight="0.3101983" />
       <window_info anchor="bottom" id="Run" order="8" sideWeight="0.4981351" weight="0.31586403" />
       <window_info anchor="bottom" id="Debug" order="9" weight="0.39967898" />
       <window_info anchor="bottom" id="Cvs" order="10" weight="0.25" />
@@ -540,7 +549,8 @@
     <MESSAGE value="new define val_loss val_acc" />
     <MESSAGE value="new SAVE by best val_acc" />
     <MESSAGE value="2019-8-5" />
-    <option name="LAST_COMMIT_MESSAGE" value="2019-8-5" />
+    <MESSAGE value="add学习率的调整，并判断history是叠加还是new？" />
+    <option name="LAST_COMMIT_MESSAGE" value="add学习率的调整，并判断history是叠加还是new？" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$main.coverage" NAME="main Coverage Results" MODIFIED="1564981611062" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -639,8 +649,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="376">
-          <caret line="176" column="54" lean-forward="true" selection-start-line="176" selection-start-column="54" selection-end-line="176" selection-end-column="54" />
+        <state relative-caret-position="300">
+          <caret line="153" column="61" selection-start-line="153" selection-start-column="61" selection-end-line="153" selection-end-column="61" />
           <folding>
             <element signature="e#23#38#0" expanded="true" />
           </folding>
