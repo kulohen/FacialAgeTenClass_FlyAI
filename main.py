@@ -38,13 +38,12 @@ model = Model(dataset)
 dataset.get_train_length() : 5866
 dataset.get_all_validation_data(): 1956
 predict datas :  1956
-
+y_train.sum(): [1773.  729.  891.  618.  399.  568.  394.  241.  204.   49.]
+y_val.sum(): [572. 247. 334. 219. 144. 185. 129.  56.  49.  21.]
 '''
-print('dataset.get_train_length()',dataset.get_train_length())
-print('dataset.get_validation_length()',dataset.get_validation_length())
 x_train, y_train , x_val, y_val =dataset.get_all_processor_data()
-x_train_and_x_val = np.concatenate((x_train, x_val),axis=0)
-y_train_and_y_val= np.concatenate((y_train , y_val),axis=0)
+x_train_and_x_val = x_train
+y_train_and_y_val= y_train
 
 dataset_slice = wangyi.getDatasetListByClassfy(classify_count=num_classes)
 x_val_slice,y_val_slice = [],[]
@@ -52,7 +51,11 @@ for epoch in range(num_classes):
     x_tmp,y_tmp = dataset_slice[epoch].get_all_validation_data()
     x_val_slice.append(x_tmp)
     y_val_slice.append(y_tmp)
-
+    if epoch==4 or epoch==6 or epoch==7 or epoch==8 or epoch==9 :
+        x_train_and_x_val = np.concatenate((x_train_and_x_val, x_tmp),axis=0)
+        y_train_and_y_val= np.concatenate((y_train_and_y_val , y_tmp),axis=0)
+print('x_train_and_x_val.shape ',x_train_and_x_val.shape)
+print('y_train_and_y_val.shape ',y_train_and_y_val.shape)
 '''
 实现自己的网络机构
 '''
@@ -68,7 +71,7 @@ adam = Adam(lr=0.003,epsilon=1e-8)
 # sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
-              optimizer=RMSprop(lr=0.01),
+              optimizer=Adam(lr=0.01),
               metrics=['accuracy'])
 
 # 模型保存的路径
@@ -144,7 +147,7 @@ for epoch in range(args.EPOCHS):
     # )
     history_train = sqeue.fit_generator(
         generator= data_iter_train,
-        steps_per_epoch=250,
+        steps_per_epoch=200,
         validation_data=(x_val,y_val),
         validation_steps=1,
         class_weight= cw_train,
@@ -179,7 +182,7 @@ for epoch in range(args.EPOCHS):
             model.save_model(model=sqeue, path=MODEL_PATH, overwrite=True)
             best_score_by_acc = sum_acc / eval_weights_count
             best_score_by_loss = sum_loss / eval_weights_count
-            print('【保存】了最佳模型by val_loss :',best_score_by_loss)
+            print('【保存】了最佳模型by val_loss : %.4f' %best_score_by_loss)
     # save best loss
     # if best_score_by_loss > sum_loss/num_classes: best_score_by_acc <  sum_acc / eval_weights_count and
     #     model.save_model(model=sqeue,path=MODEL_PATH,overwrite=True)
@@ -207,7 +210,7 @@ for epoch in range(args.EPOCHS):
         lr_level = 3
     elif history_train.history['loss'][0] < 0.05 and lr_level==3:
         sqeue.compile(loss='categorical_crossentropy',
-                      optimizer=RMSprop(lr=1e-5),
+                      optimizer=SGD(lr=1e-5),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 1e-5')
         lr_level = 4
