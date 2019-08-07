@@ -71,7 +71,7 @@ adam = Adam(lr=0.003,epsilon=1e-8)
 # sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
-              optimizer=Adam(lr=0.01),
+              optimizer=RMSprop(lr=0.003),
               metrics=['accuracy'])
 
 # 模型保存的路径
@@ -178,13 +178,13 @@ for epoch in range(args.EPOCHS):
         pass
     else:
         # save best acc
-        if best_score_by_loss > sum_loss/eval_weights_count :
+        if best_score_by_acc <  sum_acc / eval_weights_count :
             model.save_model(model=sqeue, path=MODEL_PATH, overwrite=True)
             best_score_by_acc = sum_acc / eval_weights_count
             best_score_by_loss = sum_loss / eval_weights_count
-            print('【保存】了最佳模型by val_loss : %.4f' %best_score_by_loss)
+            print('【保存】了最佳模型by val_acc : %.4f' %best_score_by_loss)
     # save best loss
-    # if best_score_by_loss > sum_loss/num_classes: best_score_by_acc <  sum_acc / eval_weights_count and
+    # if best_score_by_loss > sum_loss/eval_weights_count: best_score_by_acc <  sum_acc / eval_weights_count and
     #     model.save_model(model=sqeue,path=MODEL_PATH,overwrite=True)
     #     best_score_by_loss = sum_loss/num_classes
     #     print('保存了最佳模型by val_loss')
@@ -196,19 +196,19 @@ for epoch in range(args.EPOCHS):
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,001')
         lr_level = 1
-    elif history_train.history['loss'][0] <0.3 and lr_level==1:
+    elif history_train.history['loss'][0] <0.1 and lr_level==1:
         sqeue.compile(loss='categorical_crossentropy',
                       optimizer=RMSprop(lr=0.00033),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,00033')
         lr_level = 2
-    elif history_train.history['loss'][0] <0.1 and lr_level==2:
+    elif history_train.history['loss'][0] <0.05 and lr_level==2:
         sqeue.compile(loss='categorical_crossentropy',
                       optimizer=RMSprop(lr=0.0001),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,0001')
         lr_level = 3
-    elif history_train.history['loss'][0] < 0.05 and lr_level==3:
+    elif history_train.history['loss'][0] < 0.01 and lr_level==3:
         sqeue.compile(loss='categorical_crossentropy',
                       optimizer=SGD(lr=1e-5),
                       metrics=['accuracy'])
