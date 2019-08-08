@@ -71,8 +71,9 @@ adam = Adam(lr=0.003,epsilon=1e-8)
 # sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
-              optimizer=RMSprop(lr=0.003),
-              metrics=['accuracy'])
+              optimizer=Adam(lr=0.01),
+              metrics=['accuracy']
+              )
 
 # 模型保存的路径
 # model.check( MODEL_PATH)
@@ -88,8 +89,8 @@ xuexilv = ReduceLROnPlateau(monitor='loss',patience=4, verbose=1)
 # 采用数据增强ImageDataGenerator
 datagen= ImageDataGenerator(
     rotation_range=5,
-    width_shift_range=0.02,
-    height_shift_range=0.02,
+    width_shift_range=0.05,
+    height_shift_range=0.05,
     shear_range=0.02,
     horizontal_flip=True,
     vertical_flip=True,
@@ -101,11 +102,11 @@ data_iter_validation = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_
 
 cw_train = {
     0:1,
-    1:2.5,
-    2:2,
-    3:3,
+    1:6.25,
+    2:4,
+    3:9,
     4:0.3,
-    5:3.3,
+    5:10.9,
     6:0.3,
     7:0.3,
     8:0.3,
@@ -174,7 +175,7 @@ for epoch in range(args.EPOCHS):
         sum_loss += history_test[0] * eval_weights[iters]
         sum_acc += history_test[1] * eval_weights[iters]
     #  train loss小于 0.7 (ln0.5)，开始保存h5（最佳的val_acc）,同时开始降低学习率
-    if history_train.history['loss'][0] >0.7 :
+    if history_train.history['loss'][0] >1 :
         pass
     else:
         # save best acc
@@ -182,7 +183,7 @@ for epoch in range(args.EPOCHS):
             model.save_model(model=sqeue, path=MODEL_PATH, overwrite=True)
             best_score_by_acc = sum_acc / eval_weights_count
             best_score_by_loss = sum_loss / eval_weights_count
-            print('【保存】了最佳模型by val_acc : %.4f' %best_score_by_loss)
+            print('【保存】了最佳模型by val_acc : %.4f' %best_score_by_acc)
     # save best loss
     # if best_score_by_loss > sum_loss/eval_weights_count: best_score_by_acc <  sum_acc / eval_weights_count and
     #     model.save_model(model=sqeue,path=MODEL_PATH,overwrite=True)
