@@ -25,7 +25,7 @@ model:
       - name: image_path
         type: url
     to_type: float
-    to_shape:  [-1,299,299,3]
+    to_shape:  [-1,224,224,3]
   output:
     columns:
       - name: label

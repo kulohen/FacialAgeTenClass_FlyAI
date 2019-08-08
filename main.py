@@ -51,7 +51,7 @@ for epoch in range(num_classes):
     x_tmp,y_tmp = dataset_slice[epoch].get_all_validation_data()
     x_val_slice.append(x_tmp)
     y_val_slice.append(y_tmp)
-    if epoch==4 or epoch==6 or epoch==7 or epoch==8 or epoch==9 :
+    if epoch==4 or epoch==5 or epoch==6 or epoch==7 or epoch==8 or epoch==9 :
         x_train_and_x_val = np.concatenate((x_train_and_x_val, x_tmp),axis=0)
         y_train_and_y_val= np.concatenate((y_train_and_y_val , y_tmp),axis=0)
 print('x_train_and_x_val.shape ',x_train_and_x_val.shape)
@@ -61,17 +61,13 @@ print('y_train_and_y_val.shape ',y_train_and_y_val.shape)
 '''
 
 # sqeue = ResNet50( weights=None, include_top=True, input_shape=(300, 300, 3),classes=num_classes)
-sqeue = InceptionResNetV2(weights=None, include_top=True ,classes=num_classes)
-
-
-sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-adam = Adam(lr=0.003,epsilon=1e-8)
+sqeue = ResNet50(weights=None, include_top=True ,classes=num_classes)
 
 # 输出模型的整体信息
 # sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
-              optimizer=Adam(lr=0.03),
+              optimizer=Adam(lr=0.01),
               metrics=['accuracy']
               )
 
@@ -89,16 +85,15 @@ xuexilv = ReduceLROnPlateau(monitor='loss',patience=4, verbose=1)
 # 采用数据增强ImageDataGenerator
 datagen= ImageDataGenerator(
     rotation_range=5,
-    width_shift_range=0.05,
-    height_shift_range=0.05,
-    shear_range=0.02,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    shear_range=0.1,
     horizontal_flip=True,
-    vertical_flip=True,
-    validation_split=0.25
+    vertical_flip=True
 )
 # datagen.fit(x_train_and_x_val)
 data_iter_train = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_size=args.BATCH , save_to_dir = None)
-data_iter_validation = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_size=args.BATCH , save_to_dir = None, subset='validation')
+data_iter_validation = datagen.flow(x_val, y_val, batch_size=args.BATCH , save_to_dir = None)
 
 cw_train = {
     0:1,
@@ -106,7 +101,7 @@ cw_train = {
     2:4,
     3:9,
     4:0.3,
-    5:10.9,
+    5:0.3,
     6:0.3,
     7:0.3,
     8:0.3,
@@ -134,18 +129,6 @@ lr_level=0
 
 
 for epoch in range(args.EPOCHS):
-    # history_train = sqeue.fit(
-    #     x=x_train,
-    #     y=y_train,
-    #     batch_size=args.BATCH,
-    #     verbose=2,
-    #     callbacks= [ xuexilv,early_stopping],
-    #     # validation_split=0.,
-    #     validation_data=(x_val,y_val),
-    #     shuffle=True,
-    #     class_weight=cw_train
-    #     # class_weight = 'auto'
-    # )
     history_train = sqeue.fit_generator(
         generator= data_iter_train,
         steps_per_epoch=200,
@@ -156,9 +139,7 @@ for epoch in range(args.EPOCHS):
         verbose=2,
         workers=6
 )
-    # print('learning rate:' ,history_train.history)
-    # 没有叠加history.查看history的shape，history是叠加的？还是单独1条。用以决定fit()中initial_epoch 是否启用？
-    # print('history_train.history len : ', history_train.history['lr'])
+
     sum_loss = 0.
     sum_acc = 0.
     for iters in range(num_classes):
@@ -169,21 +150,15 @@ for epoch in range(args.EPOCHS):
             verbose=2
         )
         print('class-%d __ loss :%.4f , acc :%.4f' %(iters ,history_test[0],history_test[1]))
-        # if iters ==0 or iters==1 or iters==2 or iters==3 or iters==5 :
-        #     sum_loss +=history_test[0]
-        #     sum_acc +=history_test[1]
         sum_loss += history_test[0] * eval_weights[iters]
         sum_acc += history_test[1] * eval_weights[iters]
     #  train loss小于 0.7 (ln0.5)，开始保存h5（最佳的val_acc）,同时开始降低学习率
-    if history_train.history['val_acc'][0] >0.5 :
-        pass
-    else:
-        # save best acc
-        if best_score_by_acc <  sum_acc / eval_weights_count :
-            model.save_model(model=sqeue, path=MODEL_PATH, overwrite=True)
-            best_score_by_acc = sum_acc / eval_weights_count
-            best_score_by_loss = sum_loss / eval_weights_count
-            print('【保存】了最佳模型by val_acc : %.4f' %best_score_by_acc)
+    # save best acc
+    if history_train.history['val_acc'][0] >0.5 and best_score_by_acc <  sum_acc / eval_weights_count :
+        model.save_model(model=sqeue, path=MODEL_PATH, overwrite=True)
+        best_score_by_acc = sum_acc / eval_weights_count
+        best_score_by_loss = sum_loss / eval_weights_count
+        print('【保存】了最佳模型by val_acc : %.4f' %best_score_by_acc)
     # save best loss
     # if best_score_by_loss > sum_loss/eval_weights_count: best_score_by_acc <  sum_acc / eval_weights_count and
     #     model.save_model(model=sqeue,path=MODEL_PATH,overwrite=True)
@@ -191,21 +166,21 @@ for epoch in range(args.EPOCHS):
     #     print('保存了最佳模型by val_loss')
 
     # 调整学习率，且只执行一次
-    if history_train.history['loss'][0] <0.7 and lr_level==0:
+    if history_train.history['loss'][0] <1.5 and lr_level==0:
         sqeue.compile(loss='categorical_crossentropy',
                       optimizer=RMSprop(lr=0.003),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,001')
         lr_level = 1
-    elif history_train.history['loss'][0] <0.1 and lr_level==1:
+    elif history_train.history['loss'][0] <0.7 and lr_level==1:
         sqeue.compile(loss='categorical_crossentropy',
-                      optimizer=RMSprop(lr=0.0001),
+                      optimizer=RMSprop(lr=0.001),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,00033')
         lr_level = 2
-    elif history_train.history['loss'][0] <0.05 and lr_level==2:
+    elif history_train.history['loss'][0] <0.15 and lr_level==2:
         sqeue.compile(loss='categorical_crossentropy',
-                      optimizer=RMSprop(lr=0.0001),
+                      optimizer=SGD(lr=0.0001),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,0001')
         lr_level = 3
