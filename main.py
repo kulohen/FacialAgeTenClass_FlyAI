@@ -71,7 +71,7 @@ adam = Adam(lr=0.003,epsilon=1e-8)
 # sqeue.summary()
 
 sqeue.compile(loss='categorical_crossentropy',
-              optimizer=Adam(lr=0.01),
+              optimizer=Adam(lr=0.03),
               metrics=['accuracy']
               )
 
@@ -175,7 +175,7 @@ for epoch in range(args.EPOCHS):
         sum_loss += history_test[0] * eval_weights[iters]
         sum_acc += history_test[1] * eval_weights[iters]
     #  train loss小于 0.7 (ln0.5)，开始保存h5（最佳的val_acc）,同时开始降低学习率
-    if history_train.history['loss'][0] >1 :
+    if history_train.history['val_acc'][0] >0.5 :
         pass
     else:
         # save best acc
@@ -193,13 +193,13 @@ for epoch in range(args.EPOCHS):
     # 调整学习率，且只执行一次
     if history_train.history['loss'][0] <0.7 and lr_level==0:
         sqeue.compile(loss='categorical_crossentropy',
-                      optimizer=RMSprop(lr=0.001),
+                      optimizer=RMSprop(lr=0.003),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,001')
         lr_level = 1
     elif history_train.history['loss'][0] <0.1 and lr_level==1:
         sqeue.compile(loss='categorical_crossentropy',
-                      optimizer=RMSprop(lr=0.00033),
+                      optimizer=RMSprop(lr=0.0001),
                       metrics=['accuracy'])
         print('【学习率】调整为 : 0,00033')
         lr_level = 2
