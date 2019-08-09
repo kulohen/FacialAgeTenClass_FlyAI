@@ -17,9 +17,10 @@ from model import KERAS_MODEL_NAME
 import WangyiUtilOnFlyai as wangyi
 
 '''
-2019-07-26
-获取数据值，是否train set有问题？？读取label
+设置项目的超级参数
 '''
+num_classes = 10
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--EPOCHS", default=50, type=int, help="train epochs")
 parser.add_argument("-b", "--BATCH", default=8, type=int, help="batch size")
@@ -29,7 +30,7 @@ args = parser.parse_args()
 flyai库中的提供的数据处理方法
 传入整个数据训练多少轮，每批次批大小
 '''
-num_classes = 10
+
 dataset = Dataset(epochs=args.EPOCHS, batch=args.BATCH)
 # dataset = wangyi.DatasetExtendToSize(False ,train_size=1773,val_size= 572,classify_count=num_classes)
 # dataset = wangyi.DatasetExtendToSize(True ,train_size=40,val_size= 40,classify_count=num_classes)
@@ -96,16 +97,16 @@ data_iter_train = datagen.flow(x_train_and_x_val, y_train_and_y_val, batch_size=
 data_iter_validation = datagen.flow(x_val, y_val, batch_size=args.BATCH , save_to_dir = None)
 
 cw_train = {
-    0:1,
-    1:5.9,
-    2:4,
-    3:8.2,
-    4:10.7,
-    5:5.5,
-    6:11.5,
-    7:35.6,
-    8:49.1,
-    9:641.5
+    0:1.0,
+    1:1.0,
+    2:1.0,
+    3:0.9,
+    4:0.7,
+    5:0.7,
+    6:0.8,
+    7:0.8,
+    8:0.7,
+    9:1.2
 }
 eval_weights = {
     0:3,
