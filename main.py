@@ -97,27 +97,27 @@ data_iter_validation = datagen.flow(x_val, y_val, batch_size=args.BATCH , save_t
 
 cw_train = {
     0:1,
-    1:6.25,
+    1:5.9,
     2:4,
-    3:9,
-    4:0.3,
-    5:0.3,
-    6:0.3,
-    7:0.3,
-    8:0.3,
-    9:0.1
+    3:8.2,
+    4:10.7,
+    5:5.5,
+    6:11.5,
+    7:35.6,
+    8:49.1,
+    9:641.5
 }
 eval_weights = {
     0:3,
     1:1.2,
     2:1.5,
     3:1,
-    4:0.7,
-    5:0.9,
-    6:0.7,
-    7:0.4,
-    8:0.3,
-    9:0.1
+    4:0.,
+    5:0.,
+    6:0.,
+    7:0.,
+    8:0.,
+    9:0.
 }
 eval_weights_count = 9.8 # 应该是eval_weights的10个求和
 history_train = 0
@@ -154,7 +154,7 @@ for epoch in range(args.EPOCHS):
         sum_acc += history_test[1] * eval_weights[iters]
     #  train loss小于 0.7 (ln0.5)，开始保存h5（最佳的val_acc）,同时开始降低学习率
     # save best acc
-    if history_train.history['val_acc'][0] >0.5 and best_score_by_acc <  sum_acc / eval_weights_count :
+    if history_train.history['val_acc'][0] >0.4 and best_score_by_acc <  sum_acc / eval_weights_count :
         model.save_model(model=sqeue, path=MODEL_PATH, overwrite=True)
         best_score_by_acc = sum_acc / eval_weights_count
         best_score_by_loss = sum_loss / eval_weights_count
