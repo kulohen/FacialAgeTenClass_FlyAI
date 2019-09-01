@@ -47,21 +47,21 @@ best_score_by_loss = 999.
 lr_level=0
 train_batch_size = {}
 val_batch_size = {
-    0: 60,
-    1: 24,
-    2: 29,
-    3: 20,
-    4: 13,
-    5: 19,
-    6: 13,
-    7: 8,
-    8: 6,
-    9: 3,
+    0: 120,
+    1: 48,
+    2: 58,
+    3: 40,
+    4: 26,
+    5: 38,
+    6: 26,
+    7: 16,
+    8: 12,
+    9: 6,
 }
 
 
 # 训练集的每类的batch的量，组成的list
-train_batch_List = [16] * num_classes
+train_batch_List = [8] * num_classes
 
 myhistory = wangyi.historyByWangyi()
 
