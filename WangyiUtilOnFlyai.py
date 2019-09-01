@@ -8,194 +8,266 @@ Time    : 2019/7/28 上午9:42
 Desc:
 """
 
-import sys
-from time import time
-
-import json
 import os
-import platform
-import random
-import requests
-from flyai.dataset import Dataset
-from flyai.source.source import Source
-from flyai.source.base import Base, DATA_PATH
-from flyai.utils.yaml_helper import Yaml
+from time import clock
+
+import keras.optimizers as optmzs
+import numpy as np
+
 import pandas as pd
+from flyai.core import Lib
+from flyai.dataset import Dataset
 
-# TODO 继承Source类
-class SourceByWangyi(Source):
-    def __init__(self, custom_source=None):
-        yaml = Yaml()
-        try:
-            f = open(os.path.join(sys.path[0], 'train.json'))
-            line = f.readline().strip()
-        except IOError:
-            line = ""
-
-        postdata = {'id': yaml.get_data_id(),
-                    'env': line,
-                    'time': time(),
-                    'sign': random.random(),
-                    'goos': platform.platform()}
-        try:
-            try:
-                servers = yaml.get_servers()
-                r = requests.post(servers[0]['url'] + "/dataset", data=postdata)
-                self.__source = json.loads(r.text)
-            except:
-                self.__source = None
-
-            if self.__source is None:
-                self.__source = self.create_instance("flyai.source.csv_source", 'Csv',
-                                                     {'train_url': os.path.join(DATA_PATH, "dev.csv"),
-                                                      'test_url': os.path.join(DATA_PATH, "dev.csv")}, line)
-            elif 'yaml' in self.__source:
-                self.__source = self.__source['yaml']
-                if custom_source is None:
-                    self.__source = self.create_instance("flyai.source." + self.__source['type'] + "_source",
-                                                         self.__source['type'].capitalize(), self.__source['config'],
-                                                         line)
-                else:
-                    self.__source = custom_source
-            else:
-                if not os.path.exists(os.path.join(DATA_PATH, "train.csv")) and not os.path.exists(
-                        os.path.join(DATA_PATH, "test.csv")):
-                    raise Exception("invalid data id!")
-                else:
-                    self.__source = self.create_instance("flyai.source.csv_source", 'Csv',
-                                                         {'train_url': os.path.join(DATA_PATH, "train.csv"),
-                                                          'test_url': os.path.join(DATA_PATH, "test.csv")}, line)
-        except TypeError:
-            pass
-        self.source_csv = self.__source
-
-    def get_sliceCSVbyClassify(self,label='label',classify_count=10):
-        # step 1 : csv to dataframe
-        dataframe_train = pd.DataFrame(data=self.source_csv.data)
-        dataframe_test = pd.DataFrame(data=self.source_csv.val)
-
-        # step 2 : 筛选 csv
-        list_path_train,list_path_test = [],[]
-        for epoch in range(classify_count):
-            path_train = os.path.join(DATA_PATH, 'wangyi-train-classfy-' + str(epoch) + '.csv')
-            dataframe_train[dataframe_train[label] == epoch].to_csv(path_train,index=False)
-            list_path_train.append(path_train)
-
-            path_test = os.path.join(DATA_PATH, 'wangyi-test-classfy-' + str(epoch) + '.csv')
-            dataframe_test[dataframe_test[label] == epoch].to_csv(path_test,index=False)
-            list_path_test.append(path_test)
-
-        return list_path_train,list_path_test
+from flyai.source.base import DATA_PATH
+from flyai.source.csv_source import Csv
 
 
-def readCsv_onFlyai(readCsvOnLocal=True):
-    try:
-        f = open(os.path.join(sys.path[0], 'train.json'))
-        line = f.readline().strip()
-    except IOError:
-        line = ""
+lr_level = {
+            0:0.001,
+            1:0.0003,
+            2:0.0001,
+            3:3e-5,
+            4:1e-5
+        }
+optimizer_level = {
+    0: 'sgd',
+    1: 'rmsprop',
+    2: 'adagrad',
+    3: 'adadelta',
+    4: 'adam',
+    5: 'adamax',
+    6: 'nadam'
+}
+optimizer_name = {
+            'sgd' : optmzs.SGD,
+            'rmsprop': optmzs.RMSprop,
+            'adagrad' : optmzs.Adagrad,
+            'adadelta' : optmzs.Adadelta,
+            'adam' : optmzs.Adam,
+            'adamax' : optmzs.Adamax,
+            'nadam' : optmzs.Nadam
+        }
+class OptimizerByWangyi():
+    def __init__(self, pationce=5 , min_delta =0.003):
+        self.optimizer_iterator = 0
+        self.lr_iterator = 0
+        self.pationce_count = 0
 
-    if readCsvOnLocal:
-        source_csv = Source().create_instance("flyai.source.csv_source", 'Csv',
-                                              {'train_url': os.path.join(DATA_PATH, "dev.csv"),
-                                               'test_url': os.path.join(DATA_PATH, "dev.csv")}, line)
-    else:
-        source_csv = Source().create_instance("flyai.source.csv_source", 'Csv',
-                                              {'train_url': os.path.join(DATA_PATH, "train.csv"),
-                                               'test_url': os.path.join(DATA_PATH, "test.csv")}, line)
-    # 实际上返回的是 flyai.source.csv_source.py的 Csv类, source_csv.data 是train_csv文件,source_csv.val 是test_csv文件
-    dataframe_train = pd.DataFrame(data=source_csv.data)
-    dataframe_test = pd.DataFrame(data=source_csv.val)
+    def get_create_optimizer(self,name=None,lr_num=0):
+        if name==None or lr_num==0:
+            raise ValueError('请指定正确的优化器/学习率')
 
-    print('train data 透视表')
-    print(pd.pivot_table(dataframe_train, values=['label'], index=['label'], aggfunc='count'))
-    print('test data 透视表')
-    print(pd.pivot_table(dataframe_test, values=['label'], index=['label'], aggfunc='count'))
+        x = optimizer_name[name](lr=lr_num)
+        print('采用了优化器： ',name , ' --学习率: ', lr_num)
+        return x
 
+    def get_next(self, optimzer = None, lr = None):
+
+        if optimzer is not None:
+            name_1 = optimzer
+        else:
+            name_1 = optimizer_level[self.optimizer_iterator]
+
+        if lr is not None:
+            lr_1 = lr
+        else:
+            lr_1 = lr_level[self.lr_iterator]
+
+        x = self.get_create_optimizer(name_1 , lr_1 )
+
+        self.lr_iterator = (self.lr_iterator + 1) % len(lr_level)
+        if self.lr_iterator == 0 :
+            self.optimizer_iterator = (self.optimizer_iterator +1 ) % len(optimizer_level)
+        return x
+    #TODO 写降低学习率的回调功能？
+    def compareHistoryList(self, loss_list =None , pationce = 10, min_delta =0.001):
+        '''
+        判断这个自定义的callback，达到earlystopping , reduceLearnRate 的条件 返回True
+        :param loss_list:
+        :param pationce:
+        :param min_delta:
+        :return:
+        '''
+        self.pationce_count += 1
+        if loss_list is None :
+            ValueError('第一个参数不能为空')
+        elif len(loss_list) < pationce or self.pationce_count <pationce:
+            return  False
+        #TODO 写上判断的逻辑，或者叫做callback
+
+        # elif  (loss_list[-pationce]*pationce -sum(loss_list[-pationce: ]) ) <\
+        elif (sum(loss_list[-pationce:-pationce/2]) - sum(loss_list[-pationce/2:])) < \
+                  (min_delta * pationce) :
+            print('um(loss_list[-pationce:-pationce/2]) - sum(loss_list[-pationce/2:])) <(min_delta * pationce ：',
+                  sum(loss_list[-pationce:-pationce/2]) ,' - ',sum(loss_list[-pationce/2:]),' < ' , min_delta * pationce)
+            self.pationce_count = 0
+            return True
+        else:
+            return False
+
+
+def readCustomCsv_V3(train_csv_url, test_csv_url):
+    # 2019-08-29 flyai改版本了，这是为了适应
+
+
+    source_csv = Csv({'train_url': os.path.join(DATA_PATH, train_csv_url),
+                                           'test_url': os.path.join(DATA_PATH, test_csv_url)})
     return source_csv
 
 
-def readCustomCsv(train_csv_url, test_csv_url):
+def get_sliceCSVbyClassify_V2(label='label',classify_count=3):
+    # 2019-08-29 flyai改版本了，这是为了适应
     try:
-        f = open(os.path.join(sys.path[0], 'train.json'))
-        line = f.readline().strip()
-    except IOError:
-        line = ""
+        source_csv=readCustomCsv_V3('train.csv', 'test.csv')
+        print('train.csv , test.csv 读取成功')
+    except:
+        print('train.csv , test.csv 读取失败')
+        source_csv = None
 
-    source_csv = Source().create_instance("flyai.source.csv_source", 'Csv',
-                                          {'train_url': os.path.join(DATA_PATH, train_csv_url),
-                                           'test_url': os.path.join(DATA_PATH, test_csv_url)}, line)
-
-    return source_csv
-
-def ExtendDataFrameToSize(dataframe,size):
-    '''
-
-    :param dataframe: 要被扩展的csv
-    :param size: 扩展到指定size的大小。
-    :return: 比如原csv是12行，size输入25，那么csv至少扩展到25以上，即是12 *2 *2 =48，返回48的大小。
-    '''
-    if dataframe.shape[0] == size :
-        return dataframe
-    elif dataframe.shape[0] > size :
-        # 裁剪csv到size大小
-        return dataframe[0:size]
-    else:
-        dataframe = pd.concat([dataframe,dataframe.copy(deep=False)])
-        return ExtendDataFrameToSize(dataframe, size)
-
-def ExtendCsvToSize(source_csv , label='label', size=-1 ,classify_count = -1):
-    '''
-
-    :param source_csv: dataframe格式，数据源
-    :param label: 筛选的label
-    :param size: 定义需要扩容的size
-    :return: 扩容后的CSV，dataframe格式
-    '''
-    df5 = pd.DataFrame()
-    for i in range(classify_count):
-        if source_csv[source_csv[label] == i].empty :
-            break
-        tmp = ExtendDataFrameToSize( source_csv[source_csv[label] == i], size)
-        df5 = pd.concat([df5, tmp])
-    return df5
+    if source_csv is None:
+        try:
+            source_csv = readCustomCsv_V3('dev.csv', 'dev.csv')
+        except:
+            print('train.csv,test.csv,dev.csv 都读取失败')
 
 
-def DatasetExtendToSize(readCsvOnLocal=True , train_size=32 ,val_size=32,classify_count=10):
-    '''
-
-    :param readCsvOnLocal: 设置True运行在本地使用，设置FALSE 运行在flyai服务器上使用
-    :param size: 每类的数据集扩容到size大小
-    :param classify_count: 分类的数量
-    :return: flyai的dataset类
-    '''
-    # step 0 : read csv
-    # flyai_source = readCsv_onFlyai(readCsvOnLocal)
-    flyai_source = SourceByWangyi().source_csv
     # step 1 : csv to dataframe
-    dataframe_train = pd.DataFrame(data=flyai_source.data)
-    dataframe_test = pd.DataFrame(data=flyai_source.val)
-    # step 2 : extend csv(dataframe)
-    dataframe_train = ExtendCsvToSize(dataframe_train, size=train_size, classify_count=classify_count)
-    dataframe_test = ExtendCsvToSize(dataframe_test, size=val_size, classify_count=classify_count)
-    # step 3 : save csv
-    dataframe_train.to_csv(os.path.join(DATA_PATH, 'wangyi-train.csv'), index=False)
-    dataframe_test.to_csv(os.path.join(DATA_PATH, 'wangyi-test.csv'), index=False)
-    # step 4 : load to flyai.dataset
-    dataset_extend_newone = Dataset(source=readCustomCsv("wangyi-train.csv", "wangyi-test.csv"))
-    return dataset_extend_newone
+    dataframe_train = pd.DataFrame(data=source_csv.c.data)
+    dataframe_test = pd.DataFrame(data=source_csv.c.val)
 
-def getDatasetListByClassfy(classify_count=10):
-    test_source = SourceByWangyi()
-    xx, yy = test_source.get_sliceCSVbyClassify(classify_count=classify_count)
+    # step 2 : 筛选 csv
+
+
+    list_path_train,list_path_test = [],[]
+    for epoch in range(classify_count):
+        path_train = os.path.join(DATA_PATH, 'wangyi-train-classfy-' + str(epoch) + '.csv')
+        dataframe_train[dataframe_train[label] == epoch].to_csv(path_train,index=False)
+        list_path_train.append(path_train)
+
+        path_test = os.path.join(DATA_PATH, 'wangyi-test-classfy-' + str(epoch) + '.csv')
+        dataframe_test[dataframe_test[label] == epoch].to_csv(path_test,index=False)
+        list_path_test.append(path_test)
+        print('classfy-',epoch,' : train and test.csv save OK!')
+
+    return list_path_train,list_path_test
+
+
+def getDatasetListByClassfy_V4(classify_count=3):
+    # 2019-08-29 flyai改版本了，这是为了适应
+
+    xx, yy = get_sliceCSVbyClassify_V2(classify_count=classify_count)
     list_tmp=[]
     for epoch in range(classify_count):
-        dataset = Dataset(source=readCustomCsv(xx[epoch], yy[epoch]))
+        time_0 = clock()
+        dataset = Lib(source=readCustomCsv_V3(xx[epoch], yy[epoch]), epochs=1)
         list_tmp.append(dataset)
+        # print('class-',epoch,' 的flyai dataset 建立成功')
+        print('class-', epoch, ' 的flyai dataset 建立成功, 耗时：%.1f 秒' % (clock() - time_0), '; train_length:',
+              dataset.get_train_length(), '; val_length:', dataset.get_validation_length())
 
     return list_tmp
 
+class historyByWangyi():
+    '''
+    总结main.py中使用的代码，规整成1个类，方便调用
+    '''
+    def __init__(self):
+        # 自定义history
+        self.history_train_all = {}
+        self.history_train_loss = []
+        self.history_train_acc = []
+        self.history_train_val_loss = []
+        self.history_train_val_acc = []
+
+    def SetHistory(self,history_train):
+
+        self.history_train_loss.append(history_train.history['loss'][0])
+        self.history_train_acc.append(history_train.history['acc'][0])
+        self.history_train_val_loss.append(history_train.history['val_loss'][0])
+        self.history_train_val_acc.append(history_train.history['val_acc'][0])
+        self.history_train_all['loss'] = self.history_train_loss
+        self.history_train_all['acc'] = self.history_train_acc
+        self.history_train_all['val_loss'] = self.history_train_val_loss
+        self.history_train_all['val_acc'] = self.history_train_val_acc
+
+        return self.history_train_all
+
+class DatasetByWangyi():
+    def __init__(self, n):
+        self.num_classes= n
+
+        time_0 = clock()
+        self.dataset_slice = getDatasetListByClassfy_V4(classify_count=n)
+        self.optimzer_custom = OptimizerByWangyi()
+        print('全部分类的flyai dataset 建立成功, 耗时：%.1f 秒' % (clock() - time_0))
+
+        # 平衡输出45类数据
+        self.x_3, self.y_3, self.x_4, self.y_4 = [], [], [], []
+        self.x_5, self.y_5 ,self.x_6,self.y_6= {}, {} , {}, {}
+        self.train_batch_List = []
+        self.val_batch_size = {}
+
+    def set_Batch_Size(self,train_size,val_size):
+        self.train_batch_List = train_size
+        self.val_batch_size = val_size
+
+    def get_Next_Batch(self):
+        # 平衡输出45类数据
+        x_3, y_3, x_4, y_4 = [], [], [], []
+        x_5, y_5 = {}, {}
+
+        for iters in range(self.num_classes):
+            if self.dataset_slice[iters].get_train_length() == 0 or self.dataset_slice[
+                iters].get_validation_length() == 0 or self.train_batch_List[iters] == 0:
+                continue
+            xx_tmp_train, yy_tmp_train, xx_tmp_val, yy_tmp_val = self.dataset_slice[iters].next_batch(
+                size=self.train_batch_List[iters], test_size=self.val_batch_size[iters])
+            # 合并3类train
+            x_3.append(xx_tmp_train)
+            y_3.append(yy_tmp_train)
+            x_4.append(xx_tmp_val)
+            y_4.append(yy_tmp_val)
+            x_5[iters] = xx_tmp_val
+            y_5[iters] = yy_tmp_val
+
+        # 跳出当前epoch，貌似不需要这个if
+        if len(x_3) == 0 or len(y_3) == 0 or len(x_4) == 0 or len(y_4) == 0:
+            return None
+        x_3 = np.concatenate(x_3, axis=0)
+        y_3 = np.concatenate(y_3, axis=0)
+        x_4 = np.concatenate(x_4, axis=0)
+        y_4 = np.concatenate(y_4, axis=0)
+        return x_3, y_3, x_4, y_4 ,x_5, y_5
+
+
+
+
+
 if __name__=='__main__':
+    time_0 = clock()
+    dataset = Dataset()
+    print('常规的flyai dataset 建立成功, 耗时：%.1f 秒' % (clock() - time_0))
 
-    readCsv_onFlyai(readCsvOnLocal=True)
+    num_classes = 45
+    start_lr = 0.001
 
+    print('dataset.get_train_length()', dataset.get_train_length())
+    print('dataset.get_validation_length()', dataset.get_validation_length())
+
+    print(dataset.lib)
+
+    '''
+    读取csv
+    '''
+    train_csv_url = test_csv_url = 'dev.csv'
+
+    source_csv = Csv({'train_url': os.path.join(DATA_PATH, train_csv_url),
+                      'test_url': os.path.join(DATA_PATH, test_csv_url)})
+
+    '''
+    调用csv存储
+    '''
+
+
+    print(source_csv)
+    dataset_slice = getDatasetListByClassfy_V4(45)
