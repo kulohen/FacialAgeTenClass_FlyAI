@@ -213,34 +213,79 @@ class DatasetByWangyi():
 
     def get_Next_Batch(self):
         # 平衡输出45类数据
-        x_3, y_3, x_4, y_4 = [], [], [], []
-        x_5, y_5 = {}, {}
+        # x_3, y_3, x_4, y_4 = [], [], [], []
+        # x_5, y_5 = {}, {}
+
+        # for iters in range(self.num_classes):
+        #     if self.dataset_slice[iters].get_train_length() == 0 or self.dataset_slice[
+        #         iters].get_validation_length() == 0 or self.train_batch_List[iters] == 0:
+        #         continue
+        #     xx_tmp_train, yy_tmp_train, xx_tmp_val, yy_tmp_val = self.dataset_slice[iters].next_batch(
+        #         size=self.train_batch_List[iters], test_size=self.val_batch_size[iters])
+        #     # 合并3类train
+        #     x_3.append(xx_tmp_train)
+        #     y_3.append(yy_tmp_train)
+        #     x_4.append(xx_tmp_val)
+        #     y_4.append(yy_tmp_val)
+        #     x_5[iters] = xx_tmp_val
+        #     y_5[iters] = yy_tmp_val
+        #
+        # # 跳出当前epoch，貌似不需要这个if
+        # if len(x_3) == 0 or len(y_3) == 0 or len(x_4) == 0 or len(y_4) == 0:
+        #     return None,None,None,None,None,None
+        # x_3 = np.concatenate(x_3, axis=0)
+        # y_3 = np.concatenate(y_3, axis=0)
+        # x_4 = np.concatenate(x_4, axis=0)
+        # y_4 = np.concatenate(y_4, axis=0)
+        x_3, y_3 =self.get_Next_Train_Batch()
+        x_4, y_4, x_5, y_5 =self.get_Next_Val_Batch()
+        return x_3, y_3, x_4, y_4 ,x_5, y_5
+
+    def get_Next_Train_Batch(self):
+        # 平衡输出45类数据
+        x_3, y_3 = [], []
 
         for iters in range(self.num_classes):
-            if self.dataset_slice[iters].get_train_length() == 0 or self.dataset_slice[
-                iters].get_validation_length() == 0 or self.train_batch_List[iters] == 0:
+            if self.dataset_slice[iters].get_train_length() == 0 or self.train_batch_List[iters] == 0:
                 continue
-            xx_tmp_train, yy_tmp_train, xx_tmp_val, yy_tmp_val = self.dataset_slice[iters].next_batch(
-                size=self.train_batch_List[iters], test_size=self.val_batch_size[iters])
+            xx_tmp_train, yy_tmp_train = self.dataset_slice[iters].next_train_batch(size=self.train_batch_List[iters])
+
             # 合并3类train
             x_3.append(xx_tmp_train)
             y_3.append(yy_tmp_train)
+
+
+        # 跳出当前epoch，貌似不需要这个if
+        if len(x_3) == 0 or len(y_3) == 0 :
+            return None
+        x_3 = np.concatenate(x_3, axis=0)
+        y_3 = np.concatenate(y_3, axis=0)
+
+        return x_3, y_3
+
+    def get_Next_Val_Batch(self):
+        # 平衡输出45类数据
+        x_4, y_4 = [], []
+        x_5, y_5 = {}, {}
+
+        for iters in range(self.num_classes):
+            if self.dataset_slice[iters].get_validation_length() == 0:
+                continue
+            xx_tmp_val, yy_tmp_val = self.dataset_slice[iters].next_validation_batch(size = self.val_batch_size[iters])
+            # 合并3类train
+
             x_4.append(xx_tmp_val)
             y_4.append(yy_tmp_val)
             x_5[iters] = xx_tmp_val
             y_5[iters] = yy_tmp_val
 
         # 跳出当前epoch，貌似不需要这个if
-        if len(x_3) == 0 or len(y_3) == 0 or len(x_4) == 0 or len(y_4) == 0:
-            return None
-        x_3 = np.concatenate(x_3, axis=0)
-        y_3 = np.concatenate(y_3, axis=0)
+        if len(x_4) == 0 or len(y_4) == 0:
+            return None,None,None,None
+
         x_4 = np.concatenate(x_4, axis=0)
         y_4 = np.concatenate(y_4, axis=0)
-        return x_3, y_3, x_4, y_4 ,x_5, y_5
-
-
-
+        return x_4, y_4 ,x_5, y_5
 
 
 if __name__=='__main__':

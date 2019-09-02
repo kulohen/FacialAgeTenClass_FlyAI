@@ -61,7 +61,7 @@ val_batch_size = {
 
 
 # 训练集的每类的batch的量，组成的list
-train_batch_List = [8] * num_classes
+train_batch_List = [16] * num_classes
 
 myhistory = wangyi.historyByWangyi()
 
@@ -99,12 +99,12 @@ x = base_model(Inp)
 # x = Flatten(name='flatten_1')(x)
 
 # 冻结不打算训练的层。
-print('base_model.layers', len(base_model.layers))
-for i, layer in enumerate(base_model.layers):
-    print(i, layer.name)
-
-for layer in base_model.layers[:-33]:
-    layer.trainable = False
+# print('base_model.layers', len(base_model.layers))
+# for i, layer in enumerate(base_model.layers):
+#     print(i, layer.name)
+#
+# for layer in base_model.layers[:-33]:
+#     layer.trainable = False
     # print(layer)
 
 x = GlobalAveragePooling2D()(x)
@@ -130,7 +130,10 @@ for epoch in range(train_epoch):
     1/ 获取batch数据
     '''
     x_3, y_3, x_4, y_4, x_5, y_5 = dataset_wangyi.get_Next_Batch()
-
+    if x_3 is None:
+        cur_step = str(epoch + 1) + "/" + str(train_epoch)
+        print('\n步骤' + cur_step, ': 无batch 跳过此次循环')
+        continue
     # 采用数据增强ImageDataGenerator
     datagen = ImageDataGenerator(
         # rotation_range=180,
@@ -178,16 +181,18 @@ for epoch in range(train_epoch):
             verbose=2
         )
         # 不打印了，显示的界面篇幅有限
-        # print('class-%d __ loss :%.4f , acc :%.4f' % (iters, history_test[0], history_test[1]))
+        print('class-%d __ loss :%.4f , acc :%.4f' % (iters, history_test[0], history_test[1]))
         sum_loss += history_test[0] * val_batch_size[iters]
         sum_acc += history_test[1] * val_batch_size[iters]
-
-        # 修改下一个train batch
-        next_train_batch_size = int(history_test[0] * 20)
+        '''
+         2.3修改下一个train batch
+        '''
+        # val-loss 0.7以下不提供batch, 0.7 * 20 =14
+        next_train_batch_size = int(history_test[0] * 20 - 14)
         if next_train_batch_size > 50:
             train_batch_List[iters] = 50
-        elif next_train_batch_size == 0:
-            train_batch_List[iters] = 1
+        elif next_train_batch_size < 0:
+            train_batch_List[iters] = 0
         else:
             train_batch_List[iters] = next_train_batch_size
 
