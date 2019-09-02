@@ -38,7 +38,7 @@ args = parser.parse_args()
 MODEL_PATH_FILE = os.path.join(MODEL_PATH, KERAS_MODEL_NAME)
 
 num_classes = 10
-train_epoch = 100
+train_epoch = 400
 eval_weights_count = 9.8 # 应该是eval_weights的10个求和
 history_train = 0
 history_test = 0

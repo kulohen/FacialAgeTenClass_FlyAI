@@ -248,8 +248,8 @@ class DatasetByWangyi():
         for iters in range(self.num_classes):
             if self.dataset_slice[iters].get_train_length() == 0 or self.train_batch_List[iters] == 0:
                 continue
-            xx_tmp_train, yy_tmp_train = self.dataset_slice[iters].next_train_batch(size=self.train_batch_List[iters])
-
+            # xx_tmp_train, yy_tmp_train = self.dataset_slice[iters].next_train_batch(size=self.train_batch_List[iters])
+            xx_tmp_train, yy_tmp_train,_,_= self.dataset_slice[iters].next_batch(size=self.train_batch_List[iters], test_size=0)
             # 合并3类train
             x_3.append(xx_tmp_train)
             y_3.append(yy_tmp_train)
@@ -271,7 +271,8 @@ class DatasetByWangyi():
         for iters in range(self.num_classes):
             if self.dataset_slice[iters].get_validation_length() == 0:
                 continue
-            xx_tmp_val, yy_tmp_val = self.dataset_slice[iters].next_validation_batch(size = self.val_batch_size[iters])
+            # xx_tmp_val, yy_tmp_val = self.dataset_slice[iters].next_validation_batch(size = self.val_batch_size[iters])
+            _, _, xx_tmp_val, yy_tmp_val = self.dataset_slice[iters].next_batch(size=0, test_size=self.val_batch_size[iters])
             # 合并3类train
 
             x_4.append(xx_tmp_val)
@@ -293,7 +294,7 @@ if __name__=='__main__':
     dataset = Dataset()
     print('常规的flyai dataset 建立成功, 耗时：%.1f 秒' % (clock() - time_0))
 
-    num_classes = 45
+    num_classes = 10
     start_lr = 0.001
 
     print('dataset.get_train_length()', dataset.get_train_length())
@@ -315,4 +316,7 @@ if __name__=='__main__':
 
 
     print(source_csv)
-    dataset_slice = getDatasetListByClassfy_V4(45)
+    dataset_slice = getDatasetListByClassfy_V4(num_classes)
+
+    a,b,c,d = dataset_slice[0].next_batch(0,0)
+    print(len(a))
