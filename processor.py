@@ -5,6 +5,8 @@ from flyai.processor.base import Base
 from flyai.processor.download import check_download
 
 from path import DATA_PATH
+from keras.preprocessing import image
+from keras.applications.resnet50 import preprocess_input
 
 '''
 把样例项目中的processor.py件复制过来替换即可
@@ -20,12 +22,17 @@ class Processor(Base):
 
     def input_x(self, image_path):
         path = check_download(image_path, DATA_PATH)
-        image = cv2.imread(path)
-        image = cv2.resize(image, (224, 224))
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        x_data = numpy.array(image)
-        x_data = x_data.astype(numpy.float32)
-        x_data = numpy.multiply(x_data, 1.0 / 255.0)
+        # image = cv2.imread(path)
+        # image = cv2.resize(image, (224, 224))
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        img = image.load_img(path, target_size=(224, 224))
+        x_data = image.img_to_array(img)
+        # x_data = numpy.expand_dims(x_data, axis=0)
+        x_data = preprocess_input(x_data)
+
+        # x_data = numpy.array(image)
+        # x_data = x_data.astype(numpy.float32)
+        # x_data = numpy.multiply(x_data, 1.0 / 255.0)
         return x_data
 
     '''
@@ -36,12 +43,17 @@ class Processor(Base):
 
     def output_x(self, image_path):
         path = check_download(image_path, DATA_PATH)
-        image = cv2.imread(path)
-        image = cv2.resize(image, (224, 224))
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        x_data = numpy.array(image)
-        x_data = x_data.astype(numpy.float32)
-        x_data = numpy.multiply(x_data, 1.0 / 255.0)
+        # image = cv2.imread(path)
+        # image = cv2.resize(image, (224, 224))
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        img = image.load_img(path, target_size=(224, 224))
+        x_data = image.img_to_array(img)
+        # x_data = numpy.expand_dims(x_data, axis=0)
+        x_data = preprocess_input(x_data)
+
+        # x_data = numpy.array(image)
+        # x_data = x_data.astype(numpy.float32)
+        # x_data = numpy.multiply(x_data, 1.0 / 255.0)
         return x_data
 
     '''

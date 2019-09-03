@@ -22,6 +22,7 @@ from time import clock
 设置项目的超级参数
 '''
 try:
+    # weights_path =None
     weights_path = remote_helper.get_remote_date(
         "https://www.flyai.com/m/v0.2|resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5")
 except OSError:
@@ -188,7 +189,7 @@ for epoch in range(train_epoch):
          2.3修改下一个train batch
         '''
         # val-loss 0.7以下不提供batch, 0.7 * 20 =14
-        next_train_batch_size = int(history_test[0] * 20 - 14)
+        next_train_batch_size = int(history_test[0] * 20)
         if next_train_batch_size > 50:
             train_batch_List[iters] = 50
         elif next_train_batch_size < 0:
