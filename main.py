@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
 import argparse
-from keras.applications import ResNet50,VGG16,InceptionResNetV2
+from keras.applications import ResNet50,VGG16,InceptionResNetV2,DenseNet121
 from flyai.dataset import Dataset
 from keras.layers import Input,Conv2D, MaxPool2D, Dropout, Flatten, Dense, Activation, MaxPooling2D,ZeroPadding2D,BatchNormalization,LeakyReLU,GlobalAveragePooling2D
 from keras.models import Model as keras_model
@@ -21,10 +21,11 @@ from time import clock
 '''
 设置项目的超级参数
 '''
+
 try:
     # weights_path =None
-    weights_path = remote_helper.get_remote_date(
-        "https://www.flyai.com/m/v0.2|resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5")
+    # weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.2|resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5")
+    weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.8|densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5")
 except OSError:
     weights_path = 'imagenet'
 
@@ -92,7 +93,8 @@ time_0 = clock()
 # 创建最终模型
 Inp = Input((224, 224, 3))
 
-base_model = ResNet50(weights=weights_path, input_shape=(224, 224, 3), include_top=False)
+# base_model = ResNet50(weights=None, input_shape=(224, 224, 3), include_top=False)
+base_model = DenseNet121(weights=weights_path, input_shape=(224, 224, 3), include_top=False)
 
 # 增加定制层
 x = base_model(Inp)

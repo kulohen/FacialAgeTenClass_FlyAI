@@ -9,7 +9,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Google_App_Engine_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Google_App_Engine_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/processor.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,8 +21,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="191" column="56" selection-start-line="191" selection-start-column="56" selection-end-line="191" selection-end-column="56" />
+            <state relative-caret-position="547">
+              <caret line="43" column="48" lean-forward="true" selection-start-line="43" selection-start-column="48" selection-end-line="43" selection-end-column="48" />
               <folding>
                 <element signature="e#23#38#0" expanded="true" />
               </folding>
@@ -32,13 +31,49 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/.flyai/env/lib/python3.6/site-packages/keras/applications/densenet.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="90">
+              <caret line="10" column="29" lean-forward="true" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/keras_applications/densenet.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="956">
+              <caret line="122" column="4" selection-start-line="122" selection-start-column="4" selection-end-line="122" selection-end-column="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/processor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="950">
-              <caret line="50" column="10" selection-start-line="50" selection-start-column="10" selection-end-line="50" selection-end-column="10" />
+            <state relative-caret-position="144">
+              <caret line="8" column="29" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/.flyai/env/lib/python3.6/site-packages/keras/applications/resnet50.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="198">
+              <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
               <folding>
-                <element signature="e#23#33#0" expanded="true" />
+                <element signature="e#0#38#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/keras_applications/resnet50.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1152">
+              <caret line="74" column="76" lean-forward="true" selection-start-line="74" selection-start-column="76" selection-end-line="74" selection-end-column="76" />
             </state>
           </provider>
         </entry>
@@ -46,7 +81,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WangyiUtilOnFlyai.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3819">
+            <state relative-caret-position="1618">
               <caret line="322" selection-start-line="322" selection-end-line="322" />
               <folding>
                 <element signature="e#144#153#0" expanded="true" />
@@ -357,6 +392,7 @@
       <workItem from="1567386694669" duration="4765000" />
       <workItem from="1567428835434" duration="1377000" />
       <workItem from="1567471047357" duration="2909000" />
+      <workItem from="1567520982894" duration="2076000" />
     </task>
     <task id="LOCAL-00001" summary="flyai 脸部识别，从pytorch改成keras">
       <created>1563560902810</created>
@@ -502,7 +538,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="217614000" />
+    <option name="totallyTimeSpent" value="219690000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -514,11 +550,11 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
+    <frame x="83" y="32" width="2477" height="1408" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.44334278" visible="true" weight="0.17024128" />
-      <window_info id="Structure" order="1" sideWeight="0.5566572" side_tool="true" visible="true" weight="0.17024128" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.44264194" visible="true" weight="0.1723995" />
+      <window_info id="Structure" order="1" sideWeight="0.557358" side_tool="true" visible="true" weight="0.1723995" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="1" />
@@ -527,8 +563,8 @@
       <window_info anchor="bottom" id="Event Log" order="4" sideWeight="0.50476587" side_tool="true" weight="0.3057785" />
       <window_info anchor="bottom" id="Message" order="5" />
       <window_info anchor="bottom" id="Find" order="6" weight="0.325" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49523416" weight="0.3045326" />
-      <window_info anchor="bottom" id="Run" order="8" sideWeight="0.4981351" weight="0.31303117" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" sideWeight="0.49523416" visible="true" weight="0.30403227" />
+      <window_info anchor="bottom" id="Run" order="8" sideWeight="0.4981351" weight="0.31290323" />
       <window_info anchor="bottom" id="Debug" order="9" weight="0.39967898" />
       <window_info anchor="bottom" id="Cvs" order="10" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="11" weight="0.4" />
@@ -575,18 +611,14 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$main_3.coverage" NAME="main-3 Coverage Results" MODIFIED="1565275736339" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$main.coverage" NAME="main Coverage Results" MODIFIED="1567473042535" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$WangyiUtilOnFlyai.coverage" NAME="WangyiUtilOnFlyai Coverage Results" MODIFIED="1567428951858" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$test_new_idea.coverage" NAME="test_new_idea Coverage Results" MODIFIED="1564326235370" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$processor.coverage" NAME="processor Coverage Results" MODIFIED="1563556935779" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$predict.coverage" NAME="predict Coverage Results" MODIFIED="1563984226230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$main_3.coverage" NAME="main-3 Coverage Results" MODIFIED="1565275736339" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$main.coverage" NAME="main Coverage Results" MODIFIED="1567526625459" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$WangyiUtilOnFlyai.coverage" NAME="WangyiUtilOnFlyai Coverage Results" MODIFIED="1567428951858" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FacialAgeTenClass_FlyAI$processor.coverage" NAME="processor Coverage Results" MODIFIED="1563556935779" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/.flyai/env/lib/python3.6/site-packages/keras/engine/training.py" />
-    <entry file="file://$USER_HOME$/.flyai/env/lib/python3.6/site-packages/keras/applications/inception_resnet_v2.py" />
-    <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/keras_applications/inception_resnet_v2.py" />
-    <entry file="file://$PROJECT_DIR$/data/input/wangyi-train-classfy-9.csv" />
     <entry file="file://$PROJECT_DIR$/data/input/wangyi-train-classfy-7.csv" />
     <entry file="file://$PROJECT_DIR$/data/input/wangyi-train-classfy-5.csv" />
     <entry file="file://$USER_HOME$/.flyai/env/lib/python3.6/site-packages/pandas/core/frame.py" />
@@ -704,7 +736,7 @@
     <entry file="file://$USER_HOME$/.flyai/env/lib/python3.6/site-packages/flyai/source/csv_source.py" />
     <entry file="file://$PROJECT_DIR$/WangyiUtilOnFlyai.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3819">
+        <state relative-caret-position="1618">
           <caret line="322" selection-start-line="322" selection-end-line="322" />
           <folding>
             <element signature="e#144#153#0" expanded="true" />
@@ -714,18 +746,46 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/processor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="950">
-          <caret line="50" column="10" selection-start-line="50" selection-start-column="10" selection-end-line="50" selection-end-column="10" />
+        <state relative-caret-position="144">
+          <caret line="8" column="29" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.flyai/env/lib/python3.6/site-packages/keras/applications/resnet50.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
           <folding>
-            <element signature="e#23#33#0" expanded="true" />
+            <element signature="e#0#38#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/keras_applications/resnet50.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1152">
+          <caret line="74" column="76" lean-forward="true" selection-start-line="74" selection-start-column="76" selection-end-line="74" selection-end-column="76" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.flyai/env/lib/python3.6/site-packages/keras/applications/densenet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="10" column="29" lean-forward="true" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/keras_applications/densenet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="956">
+          <caret line="122" column="4" selection-start-line="122" selection-start-column="4" selection-end-line="122" selection-end-column="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="191" column="56" selection-start-line="191" selection-start-column="56" selection-end-line="191" selection-end-column="56" />
+        <state relative-caret-position="547">
+          <caret line="43" column="48" lean-forward="true" selection-start-line="43" selection-start-column="48" selection-end-line="43" selection-end-column="48" />
           <folding>
             <element signature="e#23#38#0" expanded="true" />
           </folding>
