@@ -6,7 +6,7 @@ from flyai.processor.download import check_download
 
 from path import DATA_PATH
 from keras.preprocessing import image
-from keras.applications.resnet50 import preprocess_input
+from keras.applications.densenet import preprocess_input
 
 '''
 把样例项目中的processor.py件复制过来替换即可
