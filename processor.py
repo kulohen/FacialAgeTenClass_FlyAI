@@ -11,7 +11,7 @@ from keras.applications.resnet50 import preprocess_input
 '''
 把样例项目中的processor.py件复制过来替换即可
 '''
-
+img_size = [160, 160]
 
 class Processor(Base):
     '''
@@ -25,7 +25,7 @@ class Processor(Base):
         # image = cv2.imread(path)
         # image = cv2.resize(image, (224, 224))
         # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        img = image.load_img(path, target_size=(224, 224))
+        img = image.load_img(path, target_size=(img_size[0], img_size[1]))
         x_data = image.img_to_array(img)
         # x_data = numpy.expand_dims(x_data, axis=0)
         x_data = preprocess_input(x_data)
@@ -46,7 +46,7 @@ class Processor(Base):
         # image = cv2.imread(path)
         # image = cv2.resize(image, (224, 224))
         # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        img = image.load_img(path, target_size=(224, 224))
+        img = image.load_img(path, target_size=(img_size[0], img_size[1]))
         x_data = image.img_to_array(img)
         # x_data = numpy.expand_dims(x_data, axis=0)
         x_data = preprocess_input(x_data)

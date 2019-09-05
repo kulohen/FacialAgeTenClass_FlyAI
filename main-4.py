@@ -17,16 +17,15 @@ from model import KERAS_MODEL_NAME
 import WangyiUtilOnFlyai as wangyi
 from flyai.utils import remote_helper
 from time import clock
-from processor import img_size
 
 '''
 设置项目的超级参数
 '''
 
 try:
-    weights_path =None
+    # weights_path =None
     # weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.2|resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5")
-    # weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.8|densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5")
+    weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.8|densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5")
 except OSError:
     weights_path = 'imagenet'
 
@@ -92,13 +91,13 @@ y_val.sum(): [572. 247. 334. 219. 144. 185. 129.  56.  49.  21.]
 '''
 time_0 = clock()
 # 创建最终模型
-Inp = Input((img_size[0], img_size[1], 3))
+Inp = Input((224, 224, 3))
 
 # base_model = ResNet50(weights=None, input_shape=(224, 224, 3), include_top=False)
-base_model = DenseNet121(weights=weights_path, input_tensor=Inp, include_top=False)
+base_model = DenseNet121(weights=weights_path, input_shape=(224, 224, 3), include_top=False)
 
 # 增加定制层
-x = base_model.output
+x = base_model(Inp)
 # x = GlobalAveragePooling2D()(x)
 # x = Flatten(name='flatten_1')(x)
 
@@ -116,7 +115,7 @@ x = GlobalAveragePooling2D()(x)
 # x = Dense(2048, activation='relu' )(x)
 predictions = Dense(num_classes, activation="softmax")(x)
 # 创建最终模型
-model_cnn = keras_model(inputs=base_model.input, outputs=predictions)
+model_cnn = keras_model(inputs=Inp, outputs=predictions)
 
 # 输出模型的整体信息
 model_cnn.summary()
