@@ -11,7 +11,7 @@ from keras.applications.densenet import preprocess_input
 '''
 把样例项目中的processor.py件复制过来替换即可
 '''
-img_size = [160, 160]
+img_size = [64, 64]
 
 class Processor(Base):
     '''

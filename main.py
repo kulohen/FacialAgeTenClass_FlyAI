@@ -41,7 +41,7 @@ args = parser.parse_args()
 MODEL_PATH_FILE = os.path.join(MODEL_PATH, KERAS_MODEL_NAME)
 
 num_classes = 10
-train_epoch = 400
+train_epoch = 1000
 eval_weights_count = 9.8 # 应该是eval_weights的10个求和
 history_train = 0
 history_test = 0
@@ -64,7 +64,19 @@ val_batch_size = {
 
 
 # 训练集的每类的batch的量，组成的list
-train_batch_List = [16] * num_classes
+# train_batch_List = [16] * num_classes
+train_batch_List = [
+    813,
+    345,
+    427,
+    298,
+    191,
+    264,
+    186,
+    113,
+    108,
+    1
+]
 
 myhistory = wangyi.historyByWangyi()
 
@@ -193,11 +205,13 @@ for epoch in range(train_epoch):
         '''
         # val-loss 0.7以下不提供batch, 0.7 * 20 =14
         # next_train_batch_size = int(history_test[0] * 20)
-        next_train_batch_size = int(history_test[0] * val_batch_size[iters]+2)
+        # next_train_batch_size = int(history_test[0] * val_batch_size[iters]+2)
+        next_train_batch_size = history_test[0]-0.7
+        next_train_batch_size = int (next_train_batch_size * val_batch_size[iters])
         if next_train_batch_size > 50:
-            train_batch_List[iters] = 50
-        elif next_train_batch_size < 0:
-            train_batch_List[iters] = 0
+            train_batch_List[iters] = next_train_batch_size =50
+        elif next_train_batch_size < 1:
+            train_batch_List[iters] = next_train_batch_size= 1
         else:
             train_batch_List[iters] = next_train_batch_size
 

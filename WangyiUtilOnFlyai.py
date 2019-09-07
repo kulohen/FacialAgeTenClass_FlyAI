@@ -141,12 +141,17 @@ def get_sliceCSVbyClassify_V2(label='label',classify_count=3):
     list_path_train,list_path_test = [],[]
     for epoch in range(classify_count):
         path_train = os.path.join(DATA_PATH, 'wangyi-train-classfy-' + str(epoch) + '.csv')
-        dataframe_train[dataframe_train[label] == epoch].to_csv(path_train,index=False)
+        a = dataframe_train[dataframe_train[label] == epoch]
+        a=a.sample(frac=1)
+        a.to_csv(path_train,index=False)
         list_path_train.append(path_train)
 
         path_test = os.path.join(DATA_PATH, 'wangyi-test-classfy-' + str(epoch) + '.csv')
-        dataframe_test[dataframe_test[label] == epoch].to_csv(path_test,index=False)
+        b = dataframe_test[dataframe_test[label] == epoch]
+        b = b.sample(frac=1)
+        b.to_csv(path_test,index=False)
         list_path_test.append(path_test)
+
         print('classfy-',epoch,' : train and test.csv save OK!')
 
     return list_path_train,list_path_test
@@ -213,30 +218,7 @@ class DatasetByWangyi():
 
     def get_Next_Batch(self):
         # 平衡输出45类数据
-        # x_3, y_3, x_4, y_4 = [], [], [], []
-        # x_5, y_5 = {}, {}
 
-        # for iters in range(self.num_classes):
-        #     if self.dataset_slice[iters].get_train_length() == 0 or self.dataset_slice[
-        #         iters].get_validation_length() == 0 or self.train_batch_List[iters] == 0:
-        #         continue
-        #     xx_tmp_train, yy_tmp_train, xx_tmp_val, yy_tmp_val = self.dataset_slice[iters].next_batch(
-        #         size=self.train_batch_List[iters], test_size=self.val_batch_size[iters])
-        #     # 合并3类train
-        #     x_3.append(xx_tmp_train)
-        #     y_3.append(yy_tmp_train)
-        #     x_4.append(xx_tmp_val)
-        #     y_4.append(yy_tmp_val)
-        #     x_5[iters] = xx_tmp_val
-        #     y_5[iters] = yy_tmp_val
-        #
-        # # 跳出当前epoch，貌似不需要这个if
-        # if len(x_3) == 0 or len(y_3) == 0 or len(x_4) == 0 or len(y_4) == 0:
-        #     return None,None,None,None,None,None
-        # x_3 = np.concatenate(x_3, axis=0)
-        # y_3 = np.concatenate(y_3, axis=0)
-        # x_4 = np.concatenate(x_4, axis=0)
-        # y_4 = np.concatenate(y_4, axis=0)
         x_3, y_3 =self.get_Next_Train_Batch()
         x_4, y_4, x_5, y_5 =self.get_Next_Val_Batch()
         return x_3, y_3, x_4, y_4 ,x_5, y_5
@@ -260,6 +242,11 @@ class DatasetByWangyi():
             return None
         x_3 = np.concatenate(x_3, axis=0)
         y_3 = np.concatenate(y_3, axis=0)
+
+        # shuffle train-data
+        per = np.random.permutation(len(x_3))  # 打乱后的行号
+        x_3 = x_3[per, :, :, :]  # 获取打乱后的训练数据
+        y_3 = y_3[per, :]
 
         return x_3, y_3
 
@@ -290,33 +277,15 @@ class DatasetByWangyi():
 
 
 if __name__=='__main__':
-    time_0 = clock()
-    dataset = Dataset()
-    print('常规的flyai dataset 建立成功, 耗时：%.1f 秒' % (clock() - time_0))
-
-    num_classes = 10
-    start_lr = 0.001
-
-    print('dataset.get_train_length()', dataset.get_train_length())
-    print('dataset.get_validation_length()', dataset.get_validation_length())
-
-    print(dataset.lib)
-
-    '''
-    读取csv
-    '''
-    train_csv_url = test_csv_url = 'dev.csv'
-
-    source_csv = Csv({'train_url': os.path.join(DATA_PATH, train_csv_url),
-                      'test_url': os.path.join(DATA_PATH, test_csv_url)})
-
-    '''
-    调用csv存储
-    '''
-
-
-    print(source_csv)
-    dataset_slice = getDatasetListByClassfy_V4(num_classes)
-
-    a,b,c,d = dataset_slice[0].next_batch(0,0)
-    print(len(a))
+    a_list = [5]*10
+    dataset_wangyi = DatasetByWangyi(10)
+    dataset_wangyi.set_Batch_Size(a_list, a_list)
+    a,b,c,d,_,_ = dataset_wangyi.get_Next_Batch()
+    print(b)
+    print()
+    print(a.shape)
+    print(b.shape)
+    per = np.random.permutation(a.shape[0])		#打乱后的行号
+    new_train_X = a[per, :, :, : ]		#获取打乱后的训练数据
+    new_train_y = b[per, : ]
+    print(new_train_y)
