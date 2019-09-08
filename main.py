@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
 import argparse
-from keras.applications import ResNet50,VGG16,InceptionResNetV2,DenseNet121
+from keras.applications import ResNet50,VGG16,InceptionResNetV2,DenseNet121,DenseNet201
 from flyai.dataset import Dataset
 from keras.layers import Input,Conv2D, MaxPool2D, Dropout, Flatten, Dense, Activation, MaxPooling2D,ZeroPadding2D,BatchNormalization,LeakyReLU,GlobalAveragePooling2D
 from keras.models import Model as keras_model
@@ -41,7 +41,7 @@ args = parser.parse_args()
 MODEL_PATH_FILE = os.path.join(MODEL_PATH, KERAS_MODEL_NAME)
 
 num_classes = 10
-train_epoch = 1000
+train_epoch = 800
 eval_weights_count = 9.8 # 应该是eval_weights的10个求和
 history_train = 0
 history_test = 0
@@ -78,6 +78,20 @@ train_batch_List = [
     1
 ]
 
+# wx+b,这是允许分类的loss最低程度，比如class-9 允许loss在1.2
+train_allow_loss = [
+    -0.3,
+    -0.5,
+    -0.5,
+    -0.5,
+    -0.8,
+    -0.5,
+    -0.8,
+    -0.8,
+    -0.8,
+    -1.2
+]
+
 myhistory = wangyi.historyByWangyi()
 
 '''
@@ -107,7 +121,7 @@ time_0 = clock()
 Inp = Input((img_size[0], img_size[1], 3))
 
 # base_model = ResNet50(weights=None, input_shape=(224, 224, 3), include_top=False)
-base_model = DenseNet121(weights=weights_path, input_tensor=Inp, include_top=False)
+base_model = DenseNet201(weights=weights_path, input_tensor=Inp, include_top=False)
 
 # 增加定制层
 x = base_model.output
@@ -206,7 +220,7 @@ for epoch in range(train_epoch):
         # val-loss 0.7以下不提供batch, 0.7 * 20 =14
         # next_train_batch_size = int(history_test[0] * 20)
         # next_train_batch_size = int(history_test[0] * val_batch_size[iters]+2)
-        next_train_batch_size = history_test[0]-0.7
+        next_train_batch_size = history_test[0] + train_allow_loss[iters]
         next_train_batch_size = int (next_train_batch_size * val_batch_size[iters])
         if next_train_batch_size > 50:
             train_batch_List[iters] = next_train_batch_size =50
