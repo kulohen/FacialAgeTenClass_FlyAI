@@ -135,6 +135,7 @@ def get_sliceCSVbyClassify_V2(label='label',classify_count=3):
     dataframe_train = pd.DataFrame(data=source_csv.c.data)
     dataframe_test = pd.DataFrame(data=source_csv.c.val)
 
+
     # step 2 : 筛选 csv
 
 
@@ -156,11 +157,59 @@ def get_sliceCSVbyClassify_V2(label='label',classify_count=3):
 
     return list_path_train,list_path_test
 
+def get_sliceCSVbyClassify_V3(label='label',classify_count=3, split=0.8):
+    # 2019-08-29 flyai改版本了，这是为了适应
+    # 将train val data 合并，再重新划分。分类到对应csv
+    try:
+        source_csv=readCustomCsv_V3('train.csv', 'test.csv')
+        print('train.csv , test.csv 读取成功')
+    except:
+        print('train.csv , test.csv 读取失败')
+        source_csv = None
+
+    if source_csv is None:
+        try:
+            source_csv = readCustomCsv_V3('dev.csv', 'dev.csv')
+            print('dev.csv 读取成功')
+        except:
+            print('train.csv,test.csv,dev.csv 都读取失败')
+
+
+    # step 1 : csv to dataframe
+    dataframe_train = pd.DataFrame(data=source_csv.c.data)
+    dataframe_test = pd.DataFrame(data=source_csv.c.val)
+
+    #TODO train and test merge one, and split by myself
+    tmp_a = pd.concat([dataframe_train,dataframe_test],axis=0)
+    tmp_b = tmp_a.sample(frac=1)
+
+    # step 2 : 筛选 csv
+
+
+    list_path_train,list_path_test = [],[]
+    for epoch in range(classify_count):
+        tmp_c = tmp_b[tmp_b[label]==epoch]
+        cut_length = int(len(tmp_c) * split)
+        a = tmp_c[ : cut_length]
+        b = tmp_c[ cut_length : ]
+
+        path_train = os.path.join(DATA_PATH, 'wangyi-train-classfy-' + str(epoch) + '.csv')
+        a.to_csv(path_train,index=False)
+        list_path_train.append(path_train)
+
+        path_test = os.path.join(DATA_PATH, 'wangyi-test-classfy-' + str(epoch) + '.csv')
+        b.to_csv(path_test,index=False)
+        list_path_test.append(path_test)
+
+        print('classfy-',epoch,' : train and test.csv save OK!')
+
+    return list_path_train,list_path_test
+
 
 def getDatasetListByClassfy_V4(classify_count=3):
     # 2019-08-29 flyai改版本了，这是为了适应
 
-    xx, yy = get_sliceCSVbyClassify_V2(classify_count=classify_count)
+    xx, yy = get_sliceCSVbyClassify_V3(classify_count=classify_count,split= 0.857)
     list_tmp=[]
     for epoch in range(classify_count):
         time_0 = clock()
@@ -277,15 +326,4 @@ class DatasetByWangyi():
 
 
 if __name__=='__main__':
-    a_list = [5]*10
-    dataset_wangyi = DatasetByWangyi(10)
-    dataset_wangyi.set_Batch_Size(a_list, a_list)
-    a,b,c,d,_,_ = dataset_wangyi.get_Next_Batch()
-    print(b)
-    print()
-    print(a.shape)
-    print(b.shape)
-    per = np.random.permutation(a.shape[0])		#打乱后的行号
-    new_train_X = a[per, :, :, : ]		#获取打乱后的训练数据
-    new_train_y = b[per, : ]
-    print(new_train_y)
+    a = getDatasetListByClassfy_V4(classify_count=10)

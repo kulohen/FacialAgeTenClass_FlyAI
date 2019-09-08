@@ -26,8 +26,8 @@ from processor import img_size
 try:
     # weights_path =None
     # weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.2|resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5")
-    # weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.8|densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5")
-    weights_path = remote_helper.get_remote_date('https://www.flyai.com/m/v0.8|densenet201_weights_tf_dim_ordering_tf_kernels_notop.h5')
+    weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.8|densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5")
+    # weights_path = remote_helper.get_remote_date('https://www.flyai.com/m/v0.8|densenet201_weights_tf_dim_ordering_tf_kernels_notop.h5')
 except OSError:
     weights_path = 'imagenet'
 
@@ -65,19 +65,7 @@ val_batch_size = {
 
 
 # 训练集的每类的batch的量，组成的list
-# train_batch_List = [16] * num_classes
-train_batch_List = [
-    813,
-    345,
-    427,
-    298,
-    191,
-    264,
-    186,
-    113,
-    108,
-    1
-]
+train_batch_List = [16] * num_classes
 
 # wx+b,这是允许分类的loss最低程度，比如class-9 允许loss在1.2
 train_allow_loss = [
@@ -112,6 +100,7 @@ dataset.get_all_validation_data(): 1956
 predict datas :  1956
 y_train.sum(): [1773.  729.  891.  618.  399.  568.  394.  241.  204.   49.]
 y_val.sum(): [572. 247. 334. 219. 144. 185. 129.  56.  49.  21.]
+evaluate:[601,242,292,197,132,185,133,82,64,28]
 '''
 
 '''
@@ -122,7 +111,7 @@ time_0 = clock()
 Inp = Input((img_size[0], img_size[1], 3))
 
 # base_model = ResNet50(weights=None, input_shape=(224, 224, 3), include_top=False)
-base_model = DenseNet201(weights=weights_path, input_shape=(img_size[0], img_size[1], 3), include_top=False)
+base_model = DenseNet121(weights=weights_path, input_shape=(img_size[0], img_size[1], 3), include_top=False)
 
 # 增加定制层
 x = base_model(Inp)
@@ -134,8 +123,8 @@ x = base_model(Inp)
 # for i, layer in enumerate(base_model.layers):
 #     print(i, layer.name)
 #
-for layer in base_model.layers[:]:
-    layer.trainable = False
+# for layer in base_model.layers[:]:
+#     layer.trainable = False
     # print(layer)
 
 x = GlobalAveragePooling2D()(x)
