@@ -24,10 +24,9 @@ from processor import img_size
 '''
 
 try:
-    # weights_path =None
+    weights_path =None
     # weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.2|resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5")
     # weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.8|densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5")
-    weights_path = remote_helper.get_remote_date('https://www.flyai.com/m/v0.8|densenet201_weights_tf_dim_ordering_tf_kernels_notop.h5')
 except OSError:
     weights_path = 'imagenet'
 
@@ -122,10 +121,10 @@ time_0 = clock()
 Inp = Input((img_size[0], img_size[1], 3))
 
 # base_model = ResNet50(weights=None, input_shape=(224, 224, 3), include_top=False)
-base_model = DenseNet201(weights=weights_path, input_shape=(img_size[0], img_size[1], 3), include_top=False)
+base_model = DenseNet201(weights=weights_path, input_tensor=Inp, include_top=False)
 
 # 增加定制层
-x = base_model(Inp)
+x = base_model.output
 # x = GlobalAveragePooling2D()(x)
 # x = Flatten(name='flatten_1')(x)
 
@@ -134,8 +133,8 @@ x = base_model(Inp)
 # for i, layer in enumerate(base_model.layers):
 #     print(i, layer.name)
 #
-for layer in base_model.layers[:]:
-    layer.trainable = False
+# for layer in base_model.layers[:-33]:
+#     layer.trainable = False
     # print(layer)
 
 x = GlobalAveragePooling2D()(x)
@@ -279,10 +278,6 @@ for epoch in range(train_epoch):
     #                       optimizer=optimzer_custom.get_next() ,
     #                       metrics=['accuracy'])
     #TODO 动态冻结训练层？
-
-    '''
-    5/ 冻结训练层
-    '''
 
 print('best_score_by_acc :%.4f' % best_score_by_acc)
 print('best_score_by_loss :%.4f' % best_score_by_loss)
