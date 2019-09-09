@@ -209,7 +209,7 @@ def get_sliceCSVbyClassify_V3(label='label',classify_count=3, split=0.8):
 def getDatasetListByClassfy_V4(classify_count=3):
     # 2019-08-29 flyai改版本了，这是为了适应
 
-    xx, yy = get_sliceCSVbyClassify_V3(classify_count=classify_count,split= 0.857)
+    xx, yy = get_sliceCSVbyClassify_V3(classify_count=classify_count,split= 0.9)
     list_tmp=[]
     for epoch in range(classify_count):
         time_0 = clock()

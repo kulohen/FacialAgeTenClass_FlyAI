@@ -56,10 +56,10 @@ val_batch_size = {
     2: 58,
     3: 40,
     4: 26,
-    5: 38,
-    6: 26,
+    5: 39,
+    6: 27,
     7: 16,
-    8: 12,
+    8: 13,
     9: 6,
 }
 
@@ -69,12 +69,12 @@ train_batch_List = [16] * num_classes
 
 # wx+b,这是允许分类的loss最低程度，比如class-9 允许loss在1.2
 train_allow_loss = [
-    -0.3,
-    -0.5,
-    -0.5,
-    -0.5,
+    -0.0,
+    -0.1,
+    -0.1,
+    -0.1,
     -0.8,
-    -0.5,
+    -0.1,
     -0.8,
     -0.8,
     -0.8,
@@ -139,7 +139,7 @@ model_cnn = keras_model(inputs=Inp, outputs=predictions)
 model_cnn.summary()
 
 model_cnn.compile(loss='categorical_crossentropy',
-              optimizer=Adam(lr=0.001),
+              optimizer=Adam(lr=0.0001),
               metrics=['accuracy']
               )
 
@@ -246,15 +246,15 @@ for epoch in range(train_epoch):
         lr_level = 1
     elif history_train.history['loss'][0] < 0.4 and lr_level == 1:
         model_cnn.compile(loss='categorical_crossentropy',
-                          optimizer=SGD(lr=1e-4, momentum=0.9, decay=1e-6, nesterov=True),
+                          optimizer=SGD(lr=1e-3, momentum=0.9, decay=1e-6, nesterov=True),
                           metrics=['accuracy'])
-        print('【学习率】调整为 : 1e-4')
+        print('【学习率】调整为 : 1e-3')
         lr_level = 2
     elif history_train.history['loss'][0] < 0.15 and lr_level == 2:
         model_cnn.compile(loss='categorical_crossentropy',
-                          optimizer=SGD(lr=5e-5, momentum=0.9, nesterov=True),
+                          optimizer=SGD(lr=1e-4, momentum=0.9, nesterov=True),
                           metrics=['accuracy'])
-        print('【学习率】调整为 : 5e-5')
+        print('【学习率】调整为 : 1e-4')
         lr_level = 3
     elif history_train.history['loss'][0] < 0.05 and lr_level == 3:
         model_cnn.compile(loss='categorical_crossentropy',
