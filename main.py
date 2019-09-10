@@ -42,7 +42,7 @@ args = parser.parse_args()
 MODEL_PATH_FILE = os.path.join(MODEL_PATH, KERAS_MODEL_NAME)
 
 num_classes = 10
-train_epoch = 800
+train_epoch = 600
 eval_weights_count = 9.8 # 应该是eval_weights的10个求和
 history_train = 0
 history_test = 0
@@ -209,10 +209,10 @@ for epoch in range(train_epoch):
          2.3修改下一个train batch
         '''
         # val-loss 0.7以下不提供batch, 0.7 * 20 =14
-        # next_train_batch_size = int(history_test[0] * 20)
+        next_train_batch_size = int(history_test[0] * 10)
         # next_train_batch_size = int(history_test[0] * val_batch_size[iters]+2)
-        next_train_batch_size = history_test[0] + train_allow_loss[iters]
-        next_train_batch_size = int (next_train_batch_size * val_batch_size[iters])
+        # next_train_batch_size = history_test[0] + train_allow_loss[iters]
+        # next_train_batch_size = int (next_train_batch_size * val_batch_size[iters])
         if next_train_batch_size > 50:
             train_batch_List[iters] = next_train_batch_size =50
         elif next_train_batch_size < 1:
@@ -240,7 +240,7 @@ for epoch in range(train_epoch):
     # 调整学习率，且只执行一次
     if history_train.history['loss'][0] < 0.9 and lr_level == 0:
         model_cnn.compile(loss='categorical_crossentropy',
-                          optimizer=RMSprop(lr=0.0005),
+                          optimizer=Adam(lr=0.0005),
                           metrics=['accuracy'])
         print('【学习率】调整为 : 0,0005')
         lr_level = 1

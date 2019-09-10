@@ -249,6 +249,7 @@ class historyByWangyi():
 class DatasetByWangyi():
     def __init__(self, n):
         self.num_classes= n
+        self.dropout = 0.5
 
         time_0 = clock()
         self.dataset_slice = getDatasetListByClassfy_V4(classify_count=n)
@@ -279,9 +280,17 @@ class DatasetByWangyi():
         for iters in range(self.num_classes):
             if self.dataset_slice[iters].get_train_length() == 0 or self.train_batch_List[iters] == 0:
                 continue
-            # xx_tmp_train, yy_tmp_train = self.dataset_slice[iters].next_train_batch(size=self.train_batch_List[iters])
-            xx_tmp_train, yy_tmp_train,_,_= self.dataset_slice[iters].next_batch(size=self.train_batch_List[iters], test_size=0)
-            # 合并3类train
+            tmp_size = int(self.train_batch_List[iters] / self.dropout )
+
+            xx_tmp_train, yy_tmp_train,_,_= self.dataset_slice[iters].next_batch(size=tmp_size, test_size=0)
+            #TODO dropout 0.5的量
+            tmp_size = len(xx_tmp_train)
+            per_2 = np.random.permutation(tmp_size)  # 打乱后的行号
+            xx_tmp_train = xx_tmp_train[per_2, :, :, :]  # 获取打乱后的训练数据
+            yy_tmp_train = yy_tmp_train[per_2, :]
+            xx_tmp_train = xx_tmp_train[0:tmp_size]
+            yy_tmp_train = yy_tmp_train[0:tmp_size]
+
             x_3.append(xx_tmp_train)
             y_3.append(yy_tmp_train)
 
