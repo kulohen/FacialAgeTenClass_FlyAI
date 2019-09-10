@@ -20,3 +20,5 @@ print(x)
 # np.random.choice(x,2,replace=False)
 print(x[:2])
 
+
+print(0%6)

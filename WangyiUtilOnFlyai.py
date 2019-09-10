@@ -54,7 +54,7 @@ class OptimizerByWangyi():
         self.pationce_count = 0
 
     def get_create_optimizer(self,name=None,lr_num=0):
-        if name==None or lr_num==0:
+        if name is None or lr_num<=0:
             raise ValueError('请指定正确的优化器/学习率')
 
         x = optimizer_name[name](lr=lr_num)
@@ -104,6 +104,14 @@ class OptimizerByWangyi():
             return True
         else:
             return False
+
+    def get_random_opt(self):
+        name = np.random.randint(0, 6)
+        lr = np.random.randint(0, 5)
+        print('启动随机de学习率')
+        return self.get_create_optimizer(optimizer_level[name] , lr_level[lr])
+
+
 
 
 def readCustomCsv_V3(train_csv_url, test_csv_url):
@@ -335,4 +343,6 @@ class DatasetByWangyi():
 
 
 if __name__=='__main__':
-    a = getDatasetListByClassfy_V4(classify_count=10)
+    a = OptimizerByWangyi()
+    for _ in range(100):
+        a.get_random_opt()

@@ -237,31 +237,38 @@ for epoch in range(train_epoch):
     '''
     4/ 调整学习率和优化模型
     '''
+    tmp_opt = None
+    if epoch == 0:
+        pass
+    elif epoch % 50 ==0:
+        tmp_opt = wangyi.OptimizerByWangyi().get_random_opt()
+
     # 调整学习率，且只执行一次
     if history_train.history['loss'][0] < 0.9 and lr_level == 0:
-        model_cnn.compile(loss='categorical_crossentropy',
-                          optimizer=Adam(lr=0.0005),
-                          metrics=['accuracy'])
-        print('【学习率】调整为 : 0,0005')
+        tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='adam',lr_num=0.0005)
         lr_level = 1
+
     elif history_train.history['loss'][0] < 0.4 and lr_level == 1:
-        model_cnn.compile(loss='categorical_crossentropy',
-                          optimizer=SGD(lr=1e-3, momentum=0.9, decay=1e-6, nesterov=True),
-                          metrics=['accuracy'])
-        print('【学习率】调整为 : 1e-3')
+        wangyi.OptimizerByWangyi().get_create_optimizer(name='sgd', lr_num=1e-3)
+        tmp_opt = SGD(lr=1e-3, momentum=0.9, decay=1e-6, nesterov=True)
         lr_level = 2
+
     elif history_train.history['loss'][0] < 0.15 and lr_level == 2:
-        model_cnn.compile(loss='categorical_crossentropy',
-                          optimizer=SGD(lr=1e-4, momentum=0.9, nesterov=True),
-                          metrics=['accuracy'])
-        print('【学习率】调整为 : 1e-4')
+        wangyi.OptimizerByWangyi().get_create_optimizer(name='sgd', lr_num=1e-4)
+        tmp_opt = SGD(lr=1e-4, momentum=0.9, decay=1e-6, nesterov=True)
         lr_level = 3
+
     elif history_train.history['loss'][0] < 0.05 and lr_level == 3:
-        model_cnn.compile(loss='categorical_crossentropy',
-                          optimizer=SGD(lr=1e-5, momentum=0.9, nesterov=True),
-                          metrics=['accuracy'])
-        print('【学习率】调整为 : 1e-5')
+        wangyi.OptimizerByWangyi().get_create_optimizer(name='sgd', lr_num=1e-5)
+        tmp_opt = SGD(lr=1e-5, momentum=0.9, decay=1e-6, nesterov=True)
         lr_level = 4
+
+    # 应用新的学习率
+    if tmp_opt is not None:
+        model_cnn.compile(loss='categorical_crossentropy',
+                          optimizer=tmp_opt,
+                          metrics=['accuracy'])
+
     # TODO 新的学习率，还没完成
     # if optimzer_custom.compareHistoryList( history_train_all['loss'] ,pationce= 5 ,min_delta=0.001) :
     #     model_cnn.compile(loss='categorical_crossentropy',
