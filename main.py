@@ -105,7 +105,8 @@ Inp = Input((img_size[0], img_size[1], 3))
 base_model = DenseNet121(weights=weights_path, input_shape=(img_size[0], img_size[1], 3), include_top=False)
 
 # 增加定制层
-x = base_model(Inp)
+# x = base_model(Inp)
+x = base_model.output
 # x = GlobalAveragePooling2D()(x)
 # x = Flatten(name='flatten_1')(x)
 
@@ -123,8 +124,8 @@ x = GlobalAveragePooling2D()(x)
 # x = Dense(2048, activation='relu' )(x)
 predictions = Dense(num_classes, activation="softmax")(x)
 # 创建最终模型
-# model_cnn = keras_model(inputs=base_model.input, outputs=predictions)
-model_cnn = keras_model(inputs=Inp, outputs=predictions)
+model_cnn = keras_model(inputs=base_model.input, outputs=predictions)
+# model_cnn = keras_model(inputs=Inp, outputs=predictions)
 
 # 输出模型的整体信息
 model_cnn.summary()
@@ -152,6 +153,7 @@ for epoch in range(train_epoch):
         width_shift_range=0.1,
         height_shift_range=0.1,
         # shear_range=0.1,
+        zca_whitening=True,
         horizontal_flip=True,
         vertical_flip=False
     )
