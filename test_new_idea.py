@@ -1,6 +1,7 @@
 import numpy as np
 import WangyiUtilOnFlyai as wangyi
 import pandas as pd
+import warnings
 
 # from keras.applications import ResNet50,VGG16,InceptionResNetV2,DenseNet121,DenseNet201
 # base_model = DenseNet121( weights=None,input_shape=(224,224, 3), include_top=False)
@@ -22,3 +23,5 @@ print(x[:2])
 
 
 print(0%6)
+
+warnings.warn('这是来自王毅的警告')

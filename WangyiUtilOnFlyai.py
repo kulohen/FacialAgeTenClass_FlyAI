@@ -187,7 +187,7 @@ def get_sliceCSVbyClassify_V3(label='label',classify_count=3, split=0.8):
     dataframe_train = pd.DataFrame(data=source_csv.c.data)
     dataframe_test = pd.DataFrame(data=source_csv.c.val)
 
-    #TODO train and test merge one, and split by myself
+    # train and test merge one, and split by myself
     tmp_a = pd.concat([dataframe_train,dataframe_test],axis=0)
     tmp_b = tmp_a.sample(frac=1)
 

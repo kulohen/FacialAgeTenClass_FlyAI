@@ -65,7 +65,7 @@ val_batch_size = {
 
 
 # 训练集的每类的batch的量，组成的list
-train_batch_List = [16] * num_classes
+train_batch_List = [8] * num_classes
 
 # wx+b,这是允许分类的loss最低程度，比如class-9 允许loss在1.2
 train_allow_loss = [
@@ -89,19 +89,10 @@ flyai库中的提供的数据处理方法
 '''
 
 dataset = Dataset(epochs=args.EPOCHS, batch=args.BATCH)
-# dataset = wangyi.DatasetExtendToSize(False ,train_size=1773,val_size= 572,classify_count=num_classes)
-# dataset = wangyi.DatasetExtendToSize(True ,train_size=40,val_size= 40,classify_count=num_classes)
 model = Model(dataset)
 dataset_wangyi = wangyi.DatasetByWangyi(num_classes)
 dataset_wangyi.set_Batch_Size(train_batch_List, val_batch_size)
-'''
-dataset.get_train_length() : 5866
-dataset.get_all_validation_data(): 1956
-predict datas :  1956
-y_train.sum(): [1773.  729.  891.  618.  399.  568.  394.  241.  204.   49.]
-y_val.sum(): [572. 247. 334. 219. 144. 185. 129.  56.  49.  21.]
-evaluate:[601,242,292,197,132,185,133,82,64,28]
-'''
+
 
 '''
 实现自己的网络机构
@@ -139,7 +130,7 @@ model_cnn = keras_model(inputs=Inp, outputs=predictions)
 model_cnn.summary()
 
 model_cnn.compile(loss='categorical_crossentropy',
-              optimizer=Adam(lr=0.0001),
+              optimizer=SGD(lr=1e-3, momentum=0.9, decay=1e-6, nesterov=True),
               metrics=['accuracy']
               )
 
@@ -209,7 +200,7 @@ for epoch in range(train_epoch):
          2.3修改下一个train batch
         '''
         # val-loss 0.7以下不提供batch, 0.7 * 20 =14
-        next_train_batch_size = int(history_test[0] * 10)
+        next_train_batch_size = int(history_test[0] * 5)
         # next_train_batch_size = int(history_test[0] * val_batch_size[iters]+2)
         # next_train_batch_size = history_test[0] + train_allow_loss[iters]
         # next_train_batch_size = int (next_train_batch_size * val_batch_size[iters])
@@ -228,12 +219,14 @@ for epoch in range(train_epoch):
     3/ 保存最佳模型model
     '''
     # save best acc
+    # if history_train.history['acc'][0] > 0.6 and \
+    #         round(best_score_by_loss, 2) >= round(history_train.history['val_loss'][0], 2):
     if history_train.history['acc'][0] > 0.6 and \
-            round(best_score_by_loss, 1) >= round(history_train.history['val_loss'][0], 1):
+            round(best_score_by_acc, 2) <= round(history_train.history['val_acc'][0], 2):
         model.save_model(model=model_cnn, path=MODEL_PATH, overwrite=True)
         best_score_by_acc = history_train.history['val_acc'][0]
         best_score_by_loss = history_train.history['val_loss'][0]
-        print('【保存】了最佳模型by val_loss : %.4f' % best_score_by_loss)
+        print('【保存】了最佳模型by val_acc : %.4f' % best_score_by_acc)
     '''
     4/ 调整学习率和优化模型
     '''
@@ -245,17 +238,18 @@ for epoch in range(train_epoch):
 
     # 调整学习率，且只执行一次
     if history_train.history['loss'][0] < 0.9 and lr_level == 0:
-        tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='adam',lr_num=0.0005)
+        wangyi.OptimizerByWangyi().get_create_optimizer(name='sgd', lr_num=1e-4)
+        tmp_opt = SGD(lr=1e-4, momentum=0.9, decay=1e-6, nesterov=True)
         lr_level = 1
 
     elif history_train.history['loss'][0] < 0.4 and lr_level == 1:
-        wangyi.OptimizerByWangyi().get_create_optimizer(name='sgd', lr_num=1e-3)
-        tmp_opt = SGD(lr=1e-3, momentum=0.9, decay=1e-6, nesterov=True)
+        wangyi.OptimizerByWangyi().get_create_optimizer(name='sgd', lr_num=1e-5)
+        tmp_opt = SGD(lr=1e-5, momentum=0.9, decay=1e-6, nesterov=True)
         lr_level = 2
 
     elif history_train.history['loss'][0] < 0.15 and lr_level == 2:
-        wangyi.OptimizerByWangyi().get_create_optimizer(name='sgd', lr_num=1e-4)
-        tmp_opt = SGD(lr=1e-4, momentum=0.9, decay=1e-6, nesterov=True)
+        wangyi.OptimizerByWangyi().get_create_optimizer(name='sgd', lr_num=1e-6)
+        tmp_opt = SGD(lr=1e-6, momentum=0.9, decay=1e-6, nesterov=True)
         lr_level = 3
 
     elif history_train.history['loss'][0] < 0.05 and lr_level == 3:

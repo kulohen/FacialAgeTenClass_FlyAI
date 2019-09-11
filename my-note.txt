@@ -1,0 +1,13 @@
+'''
+dataset.get_train_length() : 5866
+dataset.get_all_validation_data(): 1956
+predict datas :  1956
+y_train.sum(): [1773.  729.  891.  618.  399.  568.  394.  241.  204.   49.]
+y_val.sum(): [572. 247. 334. 219. 144. 185. 129.  56.  49.  21.]
+evaluate:[601,242,292,197,132,185,133,82,64,28]
+'''
+2019-9-11
+调整学习率的代码
+next_train_batch_size = int(history_test[0] * 5) ，由10改到5
+save by acc 0.01精确度，有效果
+input 224*224
