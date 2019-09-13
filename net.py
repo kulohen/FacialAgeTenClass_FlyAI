@@ -1,66 +1,54 @@
 ## build CNN
-from torch import nn
-import torch
-import torchvision
-## build CNN
+from keras.applications import ResNet50,VGG16,InceptionResNetV2,DenseNet121,DenseNet201
+from keras.layers import Input,Conv2D, MaxPool2D, Dropout, Flatten, Dense, Activation, MaxPooling2D,ZeroPadding2D,BatchNormalization,LeakyReLU,GlobalAveragePooling2D
+from keras.models import Model as keras_model
+from keras.callbacks import EarlyStopping, TensorBoard,ModelCheckpoint,ReduceLROnPlateau
+from keras.optimizers import SGD,Adam,RMSprop
+from processor import img_size
+from flyai.utils import remote_helper
 
-class Net(torch.nn.Module):
-    """Bilinear CNN model.
-    The B-CNN model is illustrated as follows.
-    conv1^2 (64) -> pool1 -> conv2^2 (128) -> pool2 -> conv3^3 (256) -> pool3
-    -> conv4^3 (512) -> pool4 -> conv5^3 (512) -> bilinear pooling
-    -> sqrt-normalize -> L2-normalize -> fc (num_classes).
-    The network accepts a 3*448*448 input, and the pool5 activation has shape
-    512*28*28 since we down-sample 5 times.
-    Attributes:
-        features, torch.nn.Module: Convolution and pooling layers.
-        fc, torch.nn.Module: self.num_classes.
-    """
-    def __init__(self, num_classes=10, pretrained=True):
+class Net():
+
+    def __init__(self, num_classes=10):
         """Declare all needed layers."""
-        torch.nn.Module.__init__(self)
         self.num_classes = num_classes
-        # Convolution and pooling layers of VGG-16.
-        self.features = torchvision.models.vgg16(pretrained=pretrained).features
-        self.features = torch.nn.Sequential(*list(self.features.children())
-                                            [:-1])  # Remove pool5.
-        # Linear classifier.
-        self.fc = torch.nn.Linear(512**2, self.num_classes)
+        try:
+            # weights_path =None
+            # weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.2|resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5")
+            weights_path = remote_helper.get_remote_data(
+                'https://www.flyai.com/m/v0.8|densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5')
+            # weights_path = remote_helper.get_remote_date('https://www.flyai.com/m/v0.8|densenet201_weights_tf_dim_ordering_tf_kernels_notop.h5')
+        except OSError:
+            weights_path = 'imagenet'
 
-        # Freeze all previous layers.
-        if pretrained:
-            for param in self.features.parameters():
-                param.requires_grad = False
-            def init_weights(layer):
-                if type(layer) == torch.nn.Conv2d or type(layer) == torch.nn.Linear:
-                    torch.nn.init.kaiming_normal_(layer.weight.data)
-                    if layer.bias is not None:
-                        torch.nn.init.constant_(layer.bias.data, val=0)
-            self.fc.apply(init_weights)
-            self.trainable_params = [
-                {'params': self.fc.parameters()}
-            ]
-        else:
-            self.trainable_params = self.parameters()
+        Inp = Input((img_size[0], img_size[1], 3))
 
-    def forward(self, X):
-        """Forward pass of the network.
-        Args:
-            X, torch.autograd.Variable of shape N*3*448*448.
-        Returns:
-            Score, torch.autograd.Variable of shape N*self.num_classes.
-        """
-        N = X.size()[0]
-        assert X.size() == (N, 3, 448, 448)
-        X = self.features(X)
-        assert X.size() == (N, 512, 28, 28)
-        X = X.view(N, 512, 28**2)
-        X = torch.bmm(X, torch.transpose(X, 1, 2)) / (28**2)  # Bilinear
-        assert X.size() == (N, 512, 512)
-        X = X.view(N, 512**2)
-        X = torch.sqrt(X + 1e-5)
-        X = torch.nn.functional.normalize(X)
-        X = self.fc(X)
-        assert X.size() == (N, self.num_classes)
-        return X
+        # base_model = ResNet50(weights=None, input_shape=(224, 224, 3), include_top=False)
+        base_model = DenseNet121(weights=weights_path, input_shape=(img_size[0], img_size[1], 3), include_top=False)
 
+        # 增加定制层
+        x = base_model(Inp)
+        # x = base_model.output
+        # x = GlobalAveragePooling2D()(x)
+        # x = Flatten(name='flatten_1')(x)
+
+        # 冻结不打算训练的层。
+        # print('base_model.layers', len(base_model.layers))
+        # for i, layer in enumerate(base_model.layers):
+        #     print(i, layer.name)
+        #
+        # for layer in base_model.layers[:]:
+        #     layer.trainable = False
+        # print(layer)
+
+        x = GlobalAveragePooling2D()(x)
+        # x = Flatten(name='flatten_1')(x)
+        # x = Dense(2048, activation='relu' )(x)
+        predictions = Dense(num_classes, activation="softmax")(x)
+        # 创建最终模型
+
+        self.model_cnn = keras_model(inputs=Inp, outputs=predictions)
+
+
+    def get_Model(self):
+        return self.model_cnn

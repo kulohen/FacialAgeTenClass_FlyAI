@@ -1,20 +1,37 @@
 # -*- coding: utf-8 -*
 import argparse
-import os
-from time import clock
-
-import WangyiUtilOnFlyai as wangyi
-import numpy as np
+from keras.applications import ResNet50,VGG16,InceptionResNetV2,DenseNet121,DenseNet201
 from flyai.dataset import Dataset
-from keras.preprocessing.image import ImageDataGenerator
-from model import KERAS_MODEL_NAME
+from keras.layers import Input,Conv2D, MaxPool2D, Dropout, Flatten, Dense, Activation, MaxPooling2D,ZeroPadding2D,BatchNormalization,LeakyReLU,GlobalAveragePooling2D
+from keras.models import Model as keras_model
 from model import Model
-from net import Net
 from path import MODEL_PATH
+from keras.callbacks import EarlyStopping, TensorBoard,ModelCheckpoint,ReduceLROnPlateau
+from keras.optimizers import SGD,Adam,RMSprop
+import numpy as np
+from keras.preprocessing.image import ImageDataGenerator
+import tensorflow as tf
+import sys
+import os
+from model import KERAS_MODEL_NAME
+import WangyiUtilOnFlyai as wangyi
+from flyai.utils import remote_helper
+from time import clock
+from processor import img_size
 
 '''
 设置项目的超级参数
 '''
+
+try:
+    # weights_path =None
+    # weights_path = remote_helper.get_remote_date("https://www.flyai.com/m/v0.2|resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5")
+    weights_path = remote_helper.get_remote_data('https://www.flyai.com/m/v0.8|densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5')
+    # weights_path = remote_helper.get_remote_date('https://www.flyai.com/m/v0.8|densenet201_weights_tf_dim_ordering_tf_kernels_notop.h5')
+except OSError:
+    weights_path = 'imagenet'
+
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--EPOCHS", default=50, type=int, help="train epochs")
@@ -82,8 +99,32 @@ dataset_wangyi.set_Batch_Size(train_batch_List, val_batch_size)
 '''
 time_0 = clock()
 # 创建最终模型
+Inp = Input((img_size[0], img_size[1], 3))
 
-model_cnn = Net().get_Model()
+# base_model = ResNet50(weights=None, input_shape=(224, 224, 3), include_top=False)
+base_model = DenseNet121(weights=weights_path, input_shape=(img_size[0], img_size[1], 3), include_top=False)
+
+# 增加定制层
+# x = base_model(Inp)
+x = base_model.output
+# x = GlobalAveragePooling2D()(x)
+# x = Flatten(name='flatten_1')(x)
+
+# 冻结不打算训练的层。
+# print('base_model.layers', len(base_model.layers))
+# for i, layer in enumerate(base_model.layers):
+#     print(i, layer.name)
+#
+# for layer in base_model.layers[:]:
+#     layer.trainable = False
+    # print(layer)
+
+x = GlobalAveragePooling2D()(x)
+# x = Flatten(name='flatten_1')(x)
+# x = Dense(2048, activation='relu' )(x)
+predictions = Dense(num_classes, activation="softmax")(x)
+# 创建最终模型
+model_cnn = keras_model(inputs=base_model.input, outputs=predictions)
 # model_cnn = keras_model(inputs=Inp, outputs=predictions)
 
 # 输出模型的整体信息
