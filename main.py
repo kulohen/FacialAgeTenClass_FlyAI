@@ -200,18 +200,18 @@ for epoch in range(train_epoch):
     # 调整学习率，且只执行一次
     if history_train.history['loss'][0] < 1.5 and lr_level == 0:
 
-        tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='adam', lr_num=1e-5)
+        tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='adam', lr_num=1e-3)
         lr_level = 1
 
-    elif history_train.history['loss'][0] < 1.2 and lr_level == 1:
-        tmp_opt = tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='adagrad', lr_num=1e-4)
+    elif history_train.history['loss'][0] < 1.0 and lr_level == 1:
+        tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='adam', lr_num=1e-5)
         lr_level = 2
 
-    elif history_train.history['loss'][0] < 0.6 and lr_level == 2:
-        tmp_opt = tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='adagrad', lr_num=3e-5)
+    elif history_train.history['loss'][0] < 0.8 and lr_level == 2:
+        tmp_opt = tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='adagrad', lr_num=1e-4)
         lr_level = 3
 
-    elif history_train.history['loss'][0] < 0.1 and lr_level == 3:
+    elif history_train.history['loss'][0] < 0.4 and lr_level == 3:
         tmp_opt = tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='adagrad', lr_num=1e-5)
         lr_level = 4
 

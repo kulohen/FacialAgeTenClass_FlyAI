@@ -22,19 +22,23 @@ class Net():
             weights_path = 'imagenet'
 
 
-        # base_model = ResNet50(weights=None, input_shape=(224, 224, 3), include_top=False)
-        base_model = DenseNet121(weights=weights_path, input_shape=(img_size[0], img_size[1], 3), include_top=False)
+        # base_model = ResNet50(weights=None, input_shape=input_shape=(img_size[0], img_size[1], 3), include_top=False)
+        base_model = DenseNet121(weights=weights_path, include_top=False)
 
-        Inp = Input((img_size[0], img_size[1], 3))
+        Inp = Input(shape=(img_size[0], img_size[1], 3))
 
-        x = Conv2D(3,(3, 3),
+        x = Conv2D(512,(3, 3),
                           activation='relu',
                           padding='same',
                           name='wangyi_conv1')(Inp)
-        x = Conv2D(3,(3, 3),
+        x = Conv2D(256,(3, 3),
                           activation='relu',
                           padding='same',
                           name='wangyi_conv2')(x)
+        x = Conv2D(3,(3, 3),
+                          activation='relu',
+                          padding='same',
+                          name='wangyi_conv3')(x)
         # 增加定制层
         x = base_model(x)
         # x = base_model.output
@@ -65,3 +69,5 @@ class Net():
 
 if __name__=='__main__':
     Net().get_Model().summary()
+    x = VGG16()
+    x.summary()
