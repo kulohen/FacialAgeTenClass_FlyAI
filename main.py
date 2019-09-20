@@ -90,7 +90,7 @@ model_cnn = Net().get_Model()
 model_cnn.summary()
 
 model_cnn.compile(loss='categorical_crossentropy',
-              optimizer=wangyi.OptimizerByWangyi().get_create_optimizer(name='adam', lr_num=1e-4),
+              optimizer=wangyi.OptimizerByWangyi().get_create_optimizer(name='rmsprop', lr_num=1e-4),
               metrics=['accuracy']
               )
 
@@ -180,12 +180,12 @@ for epoch in range(train_epoch):
     3/ 保存最佳模型model
     '''
     # save best acc
-    if history_train.history['acc'][0] > 0.6 and \
+    if history_train.history['val_accuracy'][0] > 0.58 and \
             round(best_score_by_loss, 2) >= round(history_train.history['val_loss'][0], 2):
     # if history_train.history['acc'][0] > 0.6 and \
     #         round(best_score_by_acc, 2) <= round(history_train.history['val_acc'][0], 2):
         model.save_model(model=model_cnn, path=MODEL_PATH, overwrite=True)
-        best_score_by_acc = history_train.history['val_acc'][0]
+        best_score_by_acc = history_train.history['val_accuracy'][0]
         best_score_by_loss = history_train.history['val_loss'][0]
         print('【保存】了最佳模型by val_loss : %.4f' % best_score_by_loss)
     '''
@@ -200,11 +200,11 @@ for epoch in range(train_epoch):
     # 调整学习率，且只执行一次
     if history_train.history['loss'][0] < 1.5 and lr_level == 0:
 
-        tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='adam', lr_num=1e-3)
+        tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='rmsprop', lr_num=3e-5)
         lr_level = 1
 
     elif history_train.history['loss'][0] < 1.0 and lr_level == 1:
-        tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='adam', lr_num=1e-5)
+        tmp_opt = wangyi.OptimizerByWangyi().get_create_optimizer(name='rmsprop', lr_num=1e-5)
         lr_level = 2
 
     elif history_train.history['loss'][0] < 0.8 and lr_level == 2:

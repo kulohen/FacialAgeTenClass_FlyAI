@@ -244,13 +244,13 @@ class historyByWangyi():
     def SetHistory(self,history_train):
 
         self.history_train_loss.append(history_train.history['loss'][0])
-        self.history_train_acc.append(history_train.history['acc'][0])
+        self.history_train_acc.append(history_train.history['accuracy'][0])
         self.history_train_val_loss.append(history_train.history['val_loss'][0])
-        self.history_train_val_acc.append(history_train.history['val_acc'][0])
+        self.history_train_val_acc.append(history_train.history['val_accuracy'][0])
         self.history_train_all['loss'] = self.history_train_loss
-        self.history_train_all['acc'] = self.history_train_acc
+        self.history_train_all['accuracy'] = self.history_train_acc
         self.history_train_all['val_loss'] = self.history_train_val_loss
-        self.history_train_all['val_acc'] = self.history_train_val_acc
+        self.history_train_all['val_accuracy'] = self.history_train_val_acc
 
         return self.history_train_all
 
