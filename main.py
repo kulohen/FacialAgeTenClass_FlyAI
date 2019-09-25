@@ -18,7 +18,7 @@ from path import MODEL_PATH
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--EPOCHS", default=50, type=int, help="train epochs")
-parser.add_argument("-b", "--BATCH", default=8, type=int, help="batch size")
+parser.add_argument("-b", "--BATCH", default=10, type=int, help="batch size")
 args = parser.parse_args()
 
 
@@ -48,7 +48,7 @@ val_batch_size = {
 
 
 # 训练集的每类的batch的量，组成的list
-train_batch_List = [50] * num_classes
+train_batch_List = [10] * num_classes
 
 # wx+b,这是允许分类的loss最低程度，比如class-9 允许loss在1.2
 train_allow_loss = [
@@ -161,8 +161,8 @@ for epoch in range(train_epoch):
          2.3修改下一个train batch
         '''
         # val-loss 0.7以下不提供batch, 0.7 * 20 =14
-        next_train_batch_size = int(history_test[0] * 10)
-        # next_train_batch_size = int(history_test[0] * val_batch_size[iters]+2)
+        # next_train_batch_size = int(history_test[0] * 10)
+        next_train_batch_size = int(history_test[0] * val_batch_size[iters])
         # next_train_batch_size = history_test[0] + train_allow_loss[iters]
         # next_train_batch_size = int (next_train_batch_size * val_batch_size[iters])
         if next_train_batch_size > 50:
@@ -192,7 +192,7 @@ for epoch in range(train_epoch):
     4/ 调整学习率和优化模型
     '''
     tmp_opt = None
-    if epoch == 0 or epoch==50 or epoch==100:
+    if epoch == 0 or epoch==50 or epoch==100 or epoch==150 :
         pass
     elif epoch % 50 ==0:
         tmp_opt = wangyi.OptimizerByWangyi().get_random_opt()
